@@ -1,6 +1,6 @@
 package com.bjfu.contest.pojo.entity;
 
-import com.bjfu.contest.enums.ContestRegisterStatusEnum;
+import com.bjfu.contest.enums.ContestProcessGroupStatusEnum;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,27 +10,32 @@ import javax.persistence.Enumerated;
 import javax.persistence.ManyToOne;
 
 /**
- * 竞赛报名登记实体
+ * 竞赛流程队伍实体
  * @author warthog
  */
 @Getter
 @Setter
 @Entity
-public class ContestRegister extends BaseEntity {
+public class ContestProcessGroup extends BaseEntity {
     /**
-     * 报名的竞赛
+     * 流程
      */
     @ManyToOne
-    private Contest contest;
+    private ContestProcess process;
     /**
-     * 报名的用户
+     * 队伍
      */
     @ManyToOne
-    private User user;
+    private ContestGroup group;
     /**
      * 状态
      */
     @Enumerated
     @Column(nullable = false)
-    private ContestRegisterStatusEnum status;
+    private ContestProcessGroupStatusEnum status;
+    /**
+     * 提交的内容(json array)
+     */
+    @Column(length=512)
+    private String submitList;
 }

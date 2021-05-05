@@ -1,36 +1,34 @@
 package com.bjfu.contest.pojo.entity;
 
-import com.bjfu.contest.enums.ContestRegisterStatusEnum;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Enumerated;
 import javax.persistence.ManyToOne;
 
 /**
- * 竞赛报名登记实体
+ * 竞赛队伍成员表
  * @author warthog
  */
 @Getter
 @Setter
 @Entity
-public class ContestRegister extends BaseEntity {
+public class ContestGroupMember extends BaseEntity {
+
     /**
-     * 报名的竞赛
+     * 对应的竞赛(冗余字段)
      */
     @ManyToOne
     private Contest contest;
     /**
-     * 报名的用户
+     * 加入的队伍
      */
     @ManyToOne
-    private User user;
+    private ContestGroup group;
     /**
-     * 状态
+     * 加入的成员
      */
-    @Enumerated
-    @Column(nullable = false)
-    private ContestRegisterStatusEnum status;
+    @ManyToOne
+    private User member;
 }
