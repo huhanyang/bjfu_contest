@@ -1,22 +1,19 @@
-package com.bjfu.contest.pojo.dto;
+package com.bjfu.contest.pojo.vo;
 
 import com.bjfu.contest.enums.ContestStatusEnum;
-import com.bjfu.contest.pojo.entity.*;
+import com.bjfu.contest.pojo.dto.ContestDTO;
+import com.bjfu.contest.pojo.dto.UserDTO;
 import lombok.Data;
 import org.springframework.beans.BeanUtils;
 
-import javax.persistence.*;
-import java.util.List;
-
 @Data
-public class ContestDTO {
+public class ContestVO {
 
-    public ContestDTO() {}
-    public ContestDTO(Contest contest) {
-        BeanUtils.copyProperties(contest, this, "creator");
-        this.creator = new UserDTO(contest.getCreator());
+    public ContestVO() {}
+    public ContestVO(ContestDTO contestDTO) {
+        BeanUtils.copyProperties(contestDTO, this, "creator");
+        this.setCreator(new UserVO(contestDTO.getCreator(), null));
     }
-
 
     /**
      * 主键
@@ -37,7 +34,7 @@ public class ContestDTO {
     /**
      * 竞赛创建人
      */
-    private UserDTO creator;
+    private UserVO creator;
     /**
      * 竞赛状态
      */
@@ -50,5 +47,4 @@ public class ContestDTO {
      * 扩展字段
      */
     private String extension;
-
 }

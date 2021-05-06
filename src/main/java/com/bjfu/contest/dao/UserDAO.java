@@ -11,6 +11,7 @@ public interface UserDAO {
     Optional<User> findById(Long id);
     Optional<User> findByIdForUpdate(Long id);
     Optional<User> findByAccount(String account);
+    Optional<User> findActiveUserByAccount(String account);
     Optional<User> findByAccountForUpdate(String account);
     Optional<User> findByEmail(String email);
     Optional<User> findByEmailForUpdate(String email);

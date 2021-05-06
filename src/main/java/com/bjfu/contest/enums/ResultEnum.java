@@ -25,6 +25,8 @@ public enum ResultEnum {
     TOKEN_GENERATE_FAILED(208, "token生成失败"),
     TOKEN_WRONG(209, "token错误或过期"),
     ACCOUNT_HAS_RECYCLED(210, "长时间未激活，账号已被回收"),
+    CONTEST_NOT_EXIST(211, "竞赛不存在"),
+    NOT_CONTEST_CREATOR(212, "非竞赛创建人"),
 
     USER_CONTEXT_ERROR(301, "用户信息登录上下文出错"),
 

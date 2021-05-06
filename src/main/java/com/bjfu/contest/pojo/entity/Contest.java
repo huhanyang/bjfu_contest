@@ -49,7 +49,7 @@ public class Contest extends BaseEntity {
      * 队伍人数上限
      */
     @Column(nullable=false)
-    private int groupMemberCount;
+    private Integer groupMemberCount;
     /**
      * 扩展字段
      */

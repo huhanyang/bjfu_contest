@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -57,6 +58,13 @@ public class UserDAOImpl implements UserDAO {
     @Override
     public Optional<User> findByAccount(String account) {
         return userRepository.findAllByAccountAndStatusIn(account, REGISTERED_STATUS_ENUMS)
+                .stream()
+                .findFirst();
+    }
+
+    @Override
+    public Optional<User> findActiveUserByAccount(String account) {
+        return userRepository.findAllByAccountAndStatusIn(account, Collections.singletonList(UserStatusEnum.ACTIVE))
                 .stream()
                 .findFirst();
     }
