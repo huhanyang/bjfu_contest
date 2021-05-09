@@ -27,6 +27,10 @@ public enum ResultEnum {
     ACCOUNT_HAS_RECYCLED(210, "长时间未激活，账号已被回收"),
     CONTEST_NOT_EXIST(211, "竞赛不存在"),
     NOT_CONTEST_CREATOR(212, "非竞赛创建人"),
+    EXIST_PROCESS_NOT_FINISH(213, "存在流程没有完成"),
+    PROCESS_NOT_EXIST(214, "竞赛流程不存在"),
+    PROCESS_FINISHED(215, "竞赛流程已结束"),
+    PROCESS_NOT_CREATING(216, "竞赛流程非创建状态"),
 
     USER_CONTEXT_ERROR(301, "用户信息登录上下文出错"),
 

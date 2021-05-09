@@ -1,20 +1,20 @@
-package com.bjfu.contest.pojo.dto;
+package com.bjfu.contest.pojo.vo;
 
 import com.bjfu.contest.enums.ContestProcessStatusEnum;
-import com.bjfu.contest.pojo.entity.ContestProcess;
+import com.bjfu.contest.pojo.dto.ContestProcessDTO;
 import lombok.Data;
 import org.springframework.beans.BeanUtils;
 
 import java.util.Date;
 
 @Data
-public class ContestProcessDTO {
+public class ContestProcessVO {
 
-    public ContestProcessDTO() {}
+    public ContestProcessVO() {}
 
-    public ContestProcessDTO(ContestProcess contestProcess) {
-        BeanUtils.copyProperties(contestProcess, this, "contest");
-        this.contest = new ContestDTO(contestProcess.getContest());
+    public ContestProcessVO(ContestProcessDTO processDTO) {
+        BeanUtils.copyProperties(processDTO, this, "contest");
+        this.contest = new ContestVO(processDTO.getContest());
     }
 
     /**
@@ -24,7 +24,7 @@ public class ContestProcessDTO {
     /**
      * 对应竞赛
      */
-    private ContestDTO contest;
+    private ContestVO contest;
     /**
      * 流程名
      */

@@ -3,8 +3,8 @@ package com.bjfu.contest.pojo.entity;
 import com.bjfu.contest.enums.ContestProcessStatusEnum;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.Where;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Enumerated;
@@ -20,6 +20,7 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
+@Where(clause = "status != 3")
 public class ContestProcess extends BaseEntity {
     /**
      * 对应竞赛
@@ -53,20 +54,21 @@ public class ContestProcess extends BaseEntity {
     @Column(length=512)
     private String submitList;
     /**
-     * 流程开始的时间
-     */
-    @Column(nullable=false)
-    private Date startTime;
-    /**
      * 停止提交的时间
      */
     @Column(nullable=false)
     private Date endSubmitTime;
     /**
+     * 流程开始的时间
+     */
+    @Column(nullable=true)
+    private Date startTime;
+    /**
      * 流程结束的时间
      */
-    @Column(nullable=false)
+    @Column(nullable=true)
     private Date finishTime;
+
     /**
      * 流程中的队伍
      */
