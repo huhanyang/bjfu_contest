@@ -3,6 +3,9 @@ package com.bjfu.contest.service;
 import com.bjfu.contest.pojo.dto.ContestDTO;
 import com.bjfu.contest.pojo.request.contest.ContestCreateRequest;
 import com.bjfu.contest.pojo.request.contest.ContestEditRequest;
+import com.bjfu.contest.pojo.request.contest.ContestListAllRequest;
+import com.bjfu.contest.pojo.request.contest.ContestListCreatedRequest;
+import org.springframework.data.domain.Page;
 
 /**
  * 竞赛相关操作服务
@@ -39,4 +42,20 @@ public interface ContestService {
      * @return 竞赛详细信息
      */
     ContestDTO getInfo(Long contestId);
+
+    /**
+     * 列出创建的竞赛
+     * @param request 请求
+     * @param account 账号
+     * @return 分页竞赛信息
+     */
+    Page<ContestDTO> listCreated(ContestListCreatedRequest request, String account);
+
+    /**
+     * 列出所有竞赛
+     * @param request 请求
+     * @param account 账号
+     * @return 分页竞赛信息
+     */
+    Page<ContestDTO> listAll(ContestListAllRequest request, String account);
 }

@@ -7,11 +7,15 @@ import com.bjfu.contest.pojo.dto.ContestDTO;
 import com.bjfu.contest.pojo.dto.UserDTO;
 import com.bjfu.contest.pojo.request.contest.ContestCreateRequest;
 import com.bjfu.contest.pojo.request.contest.ContestEditRequest;
+import com.bjfu.contest.pojo.request.contest.ContestListAllRequest;
+import com.bjfu.contest.pojo.request.contest.ContestListCreatedRequest;
 import com.bjfu.contest.pojo.vo.ContestVO;
+import com.bjfu.contest.security.annotation.RequireLogin;
 import com.bjfu.contest.security.annotation.RequireTeacher;
 import com.bjfu.contest.service.ContestService;
 import com.bjfu.contest.utils.UserInfoContextUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -56,6 +60,24 @@ public class ContestController {
     public BaseResult<ContestVO> getInfo(@NotNull(message = "竞赛id不能为空!") Long contestId) {
         ContestDTO contestDTO = contestService.getInfo(contestId);
         return BaseResult.success(new ContestVO(contestDTO));
+    }
+
+    @RequireTeacher
+    @PostMapping("/listCreated")
+    public BaseResult<Page<ContestVO>> listCreated(@Validated @RequestBody ContestListCreatedRequest request) {
+        UserDTO userDTO = UserInfoContextUtil.getUserInfo()
+                .orElseThrow(() -> new AppException(ResultEnum.USER_CONTEXT_ERROR));
+        Page<ContestDTO> contestDTOS = contestService.listCreated(request, userDTO.getAccount());
+        return BaseResult.success(contestDTOS.map(ContestVO::new));
+    }
+
+    @RequireLogin
+    @PostMapping("/listAll")
+    public BaseResult<Page<ContestVO>> listAll(@Validated @RequestBody ContestListAllRequest request) {
+        UserDTO userDTO = UserInfoContextUtil.getUserInfo()
+                .orElseThrow(() -> new AppException(ResultEnum.USER_CONTEXT_ERROR));
+        Page<ContestDTO> contestDTOS = contestService.listAll(request, userDTO.getAccount());
+        return BaseResult.success(contestDTOS.map(ContestVO::new));
     }
 
 }

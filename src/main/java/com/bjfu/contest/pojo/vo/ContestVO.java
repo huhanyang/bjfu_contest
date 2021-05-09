@@ -6,6 +6,8 @@ import com.bjfu.contest.pojo.dto.UserDTO;
 import lombok.Data;
 import org.springframework.beans.BeanUtils;
 
+import java.util.Date;
+
 @Data
 public class ContestVO {
 
@@ -47,4 +49,8 @@ public class ContestVO {
      * 扩展字段
      */
     private String extension;
+    /**
+     * 创建时间
+     */
+    private Date createdTime;
 }

@@ -3,6 +3,7 @@ package com.bjfu.contest.repository;
 import com.bjfu.contest.enums.ContestStatusEnum;
 import com.bjfu.contest.pojo.entity.Contest;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 
@@ -10,7 +11,7 @@ import javax.persistence.LockModeType;
 import java.util.List;
 import java.util.Optional;
 
-public interface ContestRepository extends JpaRepository<Contest, Long> {
+public interface ContestRepository extends JpaRepository<Contest, Long>, JpaSpecificationExecutor<Contest> {
 
     Optional<Contest> findByIdAndStatusIn(Long id, List<ContestStatusEnum> statusEnums);
 

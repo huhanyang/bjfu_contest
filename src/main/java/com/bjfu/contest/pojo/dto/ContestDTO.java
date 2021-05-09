@@ -5,8 +5,7 @@ import com.bjfu.contest.pojo.entity.*;
 import lombok.Data;
 import org.springframework.beans.BeanUtils;
 
-import javax.persistence.*;
-import java.util.List;
+import java.util.Date;
 
 @Data
 public class ContestDTO {
@@ -50,5 +49,9 @@ public class ContestDTO {
      * 扩展字段
      */
     private String extension;
+    /**
+     * 创建时间
+     */
+    private Date createdTime;
 
 }
