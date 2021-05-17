@@ -17,9 +17,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Validated
 @RestController
@@ -38,7 +42,7 @@ public class UserController {
 
     @PostMapping("/register")
     public BaseResult<Void> register(@Validated @RequestBody UserRegisterRequest request) {
-        UserDTO userDTO = userService.register(request);
+        userService.register(request);
         return BaseResult.success();
     }
 
@@ -64,11 +68,11 @@ public class UserController {
 
     @RequireLogin
     @PostMapping("/editUserInfo")
-    public BaseResult<UserVO> editUserInfo(@Validated @RequestBody UserEditUserInfoRequest request) {
+    public BaseResult<Void> editUserInfo(@Validated @RequestBody UserEditUserInfoRequest request) {
         UserDTO self = UserInfoContextUtil.getUserInfo()
                 .orElseThrow(() -> new AppException(ResultEnum.USER_CONTEXT_ERROR));
-        UserDTO userDTO = userService.editUserInfo(request, self.getId());
-        return BaseResult.success(new UserVO(userDTO, null));
+        userService.editUserInfo(request, self.getId());
+        return BaseResult.success();
     }
 
     @RequireLogin
@@ -77,7 +81,7 @@ public class UserController {
         UserDTO userDTO = UserInfoContextUtil.getUserInfo()
                 .orElseThrow(() -> new AppException(ResultEnum.USER_CONTEXT_ERROR));
         userService.editSelfInfo(request, userDTO.getAccount());
-        return BaseResult.success(new UserVO(userDTO, null));
+        return BaseResult.success(new UserVO(userDTO));
     }
 
     @RequireLogin
@@ -111,7 +115,7 @@ public class UserController {
     public BaseResult<UserVO> me() {
         UserDTO userDTO = UserInfoContextUtil.getUserInfo()
                 .orElseThrow(() -> new AppException(ResultEnum.USER_CONTEXT_ERROR));
-        userDTO = userService.getUserInfo(userDTO.getAccount());
+        userDTO = userService.getMyInfo(userDTO.getId());
         if(userDTO.getStatus().equals(UserStatusEnum.BANNED)) {
             throw new BizException(ResultEnum.USER_IS_BANNED);
         }
@@ -121,9 +125,16 @@ public class UserController {
 
     @RequireLogin
     @GetMapping("/getUserInfo")
-    public BaseResult<UserVO> getUserInfo(Long userId) {
+    public BaseResult<UserVO> getUserInfo(@NotNull(message = "用户id不能为空") Long userId) {
         UserDTO userDTO = userService.getUserInfo(userId);
-        return BaseResult.success(new UserVO(userDTO, null));
+        return BaseResult.success(new UserVO(userDTO));
+    }
+
+    @RequireLogin
+    @PostMapping("/search")
+    public BaseResult<List<UserVO>> search(@Validated @RequestBody UserSearchRequest request) {
+        List<UserDTO> userDTOS = userService.searchByNameAndType(request);
+        return BaseResult.success(userDTOS.stream().map(UserVO::new).collect(Collectors.toList()));
     }
 
 }

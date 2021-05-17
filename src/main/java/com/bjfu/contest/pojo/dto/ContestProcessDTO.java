@@ -1,26 +1,56 @@
 package com.bjfu.contest.pojo.dto;
 
 import com.bjfu.contest.enums.ContestProcessStatusEnum;
+import com.bjfu.contest.pojo.entity.Contest;
 import com.bjfu.contest.pojo.entity.ContestProcess;
+import com.bjfu.contest.pojo.entity.ContestProcessGroup;
 import lombok.Data;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
+import javax.persistence.*;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 public class ContestProcessDTO {
 
     public ContestProcessDTO() {}
 
-    public ContestProcessDTO(ContestProcess contestProcess) {
-        BeanUtils.copyProperties(contestProcess, this, "contest");
-        this.contest = new ContestDTO(contestProcess.getContest());
+    public ContestProcessDTO(ContestProcess contestProcess, boolean needContest, boolean needGroups) {
+        if(contestProcess != null) {
+            BeanUtils.copyProperties(contestProcess, this, "contest", "group");
+            if(needContest) {
+                this.contest = new ContestDTO(contestProcess.getContest(),
+                        true, false,
+                        false, false,
+                        false, false);
+            }
+            if(needGroups) {
+                this.groups = contestProcess.getGroups()
+                        .stream()
+                        .map(contestProcessGroup -> new ContestProcessGroupDTO(contestProcessGroup, false, true))
+                        .collect(Collectors.toList());
+            }
+        }
     }
 
     /**
-     * 流程id
+     * 主键
      */
     private Long id;
+    /**
+     * 创建时间
+     */
+    private Date createdTime;
+    /**
+     * 修改时间
+     */
+    private Date lastModifiedTime;
+
     /**
      * 对应竞赛
      */
@@ -46,15 +76,20 @@ public class ContestProcessDTO {
      */
     private String submitList;
     /**
-     * 流程开始的时间
-     */
-    private Date startTime;
-    /**
      * 停止提交的时间
      */
     private Date endSubmitTime;
     /**
+     * 流程开始的时间
+     */
+    private Date startTime;
+    /**
      * 流程结束的时间
      */
     private Date finishTime;
+
+    /**
+     * 流程中的队伍
+     */
+    private List<ContestProcessGroupDTO> groups;
 }

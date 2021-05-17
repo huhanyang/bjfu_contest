@@ -30,11 +30,9 @@ public class ContestProcessServiceImpl implements ContestProcessService {
     private ContestProcessDAO contestProcessDAO;
 
     @Override
-    public ContestProcessDTO getInfo(Long contestId, Long processId) {
-        Contest contest = contestDAO.findById(contestId)
-                .orElseThrow(() -> new BizException(ResultEnum.CONTEST_NOT_EXIST));
+    public ContestProcessDTO getInfo(Long processId) {
         return contestProcessDAO.findById(processId)
-                .map(ContestProcessDTO::new)
+                .map(process -> new ContestProcessDTO(process, true, true))
                 .orElseThrow(() -> new BizException(ResultEnum.PROCESS_NOT_EXIST));
     }
 
@@ -45,7 +43,7 @@ public class ContestProcessServiceImpl implements ContestProcessService {
         return contest.getProcesses()
                 .stream()
                 .sorted(Comparator.comparingInt(ContestProcess::getSort))
-                .map(ContestProcessDTO::new)
+                .map(process -> new ContestProcessDTO(process, false, false))
                 .collect(Collectors.toList());
     }
 
@@ -73,12 +71,12 @@ public class ContestProcessServiceImpl implements ContestProcessService {
         contestProcess.setContest(contest);
         contestProcess.setSort(lastProcessSort + 1);
         contestProcessDAO.insert(contestProcess);
-        return new ContestProcessDTO(contestProcess);
+        return new ContestProcessDTO(contestProcess, false, false);
     }
 
     @Override
     @Transactional
-    public ContestProcessDTO edit(ProcessEditRequest request, String account) {
+    public void edit(ProcessEditRequest request, String account) {
         Contest contest = contestDAO.findByIdForUpdate(request.getContestId())
                 .orElseThrow(() -> new BizException(ResultEnum.CONTEST_NOT_EXIST));
         // 验证竞赛创建者
@@ -94,7 +92,6 @@ public class ContestProcessServiceImpl implements ContestProcessService {
         }
         BeanUtils.copyProperties(request, process);
         contestProcessDAO.update(process);
-        return new ContestProcessDTO(process);
     }
 
     @Override

@@ -35,17 +35,12 @@ public class Notify extends BaseEntity {
     @Column(nullable=false)
     private NotifyTypeEnum type;
     /**
-     * 是否发送邮件
-     */
-    @Column(nullable=false)
-    private Boolean isSendEmail;
-    /**
      * 所属目标
      */
     private Long targetId;
     /**
-     * 携带的资源
+     * 是否发送邮件
      */
-    @OneToOne
-    private Resource resource;
+    @Column(nullable=false)
+    private Boolean isSendEmail;
 }

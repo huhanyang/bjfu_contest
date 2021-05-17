@@ -1,6 +1,7 @@
 package com.bjfu.contest.repository;
 
 import com.bjfu.contest.enums.UserStatusEnum;
+import com.bjfu.contest.enums.UserTypeEnum;
 import com.bjfu.contest.pojo.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
@@ -20,6 +21,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     List<User> findAllByAccountAndStatusIn(String account, List<UserStatusEnum> statusEnums);
 
+    List<User> findAllByAccountInAndStatusIn(List<String> account, List<UserStatusEnum> statusEnums);
+
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query(value = "select user from User user where user.account=?1 and user.status in ?2")
     List<User> findAllByAccountAndStatusInForUpdate(String account, List<UserStatusEnum> statusEnums);
@@ -29,5 +32,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query(value = "select user from User user where user.email=?1 and user.status in ?2")
     List<User> findAllByEmailAndStatusInForUpdate(String email, List<UserStatusEnum> statusEnums);
+
+    List<User> findByNameLikeAndStatusInAndTypeIn(String name, List<UserStatusEnum> statusEnums, List<UserTypeEnum> typeEnums);
 
 }

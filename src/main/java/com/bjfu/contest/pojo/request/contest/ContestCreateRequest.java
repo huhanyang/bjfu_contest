@@ -31,4 +31,9 @@ public class ContestCreateRequest {
      */
     @NotNull(message = "队伍人数上限不能为空!")
     private Integer groupMemberCount;
+    /**
+     * 是否创建默认的报名流程
+     */
+    @NotNull(message = "请选择是否创建默认的报名流程")
+    private Boolean isCreateDefaultProcess;
 }

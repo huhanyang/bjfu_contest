@@ -60,7 +60,7 @@ public class ContestDAOImpl implements ContestDAO {
         return contestRepository.findByIdAndStatusInForUpdate(id, STATUS_ENUMS);
     }
 
-    private static Map<String, Integer> FIELD_ORDER_WEIGHT = new HashMap<>();
+    private static final Map<String, Integer> FIELD_ORDER_WEIGHT = new HashMap<>();
 
     static {
         FIELD_ORDER_WEIGHT.put("name", 1);
@@ -97,7 +97,12 @@ public class ContestDAOImpl implements ContestDAO {
     }
 
     @Override
-    public Page<Contest> findByNameLikeAndStatusInAndCreatorNameLikeAndCreatorCollegeLike(String name, List<ContestStatusEnum> statuses, String creatorName, String creatorCollege, BasePageAndSorterRequest.Pagination pagination, List<BasePageAndSorterRequest.Sorter> sorter) {
+    public Page<Contest> findByNameLikeAndStatusInAndCreatorNameLikeAndCreatorCollegeLike(String name,
+                                                                                          List<ContestStatusEnum> statuses,
+                                                                                          String creatorName,
+                                                                                          String creatorCollege,
+                                                                                          BasePageAndSorterRequest.Pagination pagination,
+                                                                                          List<BasePageAndSorterRequest.Sorter> sorter) {
         List<Sort.Order> orders = Optional.ofNullable(sorter).orElse(new LinkedList<>())
                 .stream()
                 .filter(singleSorter -> StringUtils.hasText(singleSorter.getField()))

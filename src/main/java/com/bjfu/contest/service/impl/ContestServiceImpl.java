@@ -1,11 +1,13 @@
 package com.bjfu.contest.service.impl;
 
 import com.bjfu.contest.dao.ContestDAO;
+import com.bjfu.contest.dao.ContestProcessDAO;
 import com.bjfu.contest.dao.UserDAO;
 import com.bjfu.contest.enums.ResultEnum;
 import com.bjfu.contest.exception.BizException;
 import com.bjfu.contest.pojo.dto.ContestDTO;
 import com.bjfu.contest.pojo.entity.Contest;
+import com.bjfu.contest.pojo.entity.ContestProcess;
 import com.bjfu.contest.pojo.entity.User;
 import com.bjfu.contest.pojo.request.contest.ContestCreateRequest;
 import com.bjfu.contest.pojo.request.contest.ContestEditRequest;
@@ -17,6 +19,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Optional;
 
 @Service
@@ -26,8 +31,11 @@ public class ContestServiceImpl implements ContestService {
     private ContestDAO contestDAO;
     @Autowired
     private UserDAO userDAO;
+    @Autowired
+    private ContestProcessDAO contestProcessDAO;
 
     @Override
+    @Transactional
     public ContestDTO create(ContestCreateRequest request, String account) {
         User user = userDAO.findActiveUserByAccount(account)
                 .orElseThrow(() -> new BizException(ResultEnum.USER_DONT_EXIST));
@@ -35,11 +43,25 @@ public class ContestServiceImpl implements ContestService {
         BeanUtils.copyProperties(request, contest);
         contest.setCreator(user);
         contestDAO.insert(contest);
-        return new ContestDTO(contest);
+        if(request.getIsCreateDefaultProcess()) {
+            ContestProcess defaultProcess = new ContestProcess();
+            defaultProcess.setContest(contest);
+            defaultProcess.setName("报名组队流程");
+            defaultProcess.setSort(1);
+            defaultProcess.setDescription("报名组队流程，请在此流程内报名组队，流程结束时由竞赛创建者筛选晋级的参赛队伍。");
+            defaultProcess.setSubmitList("{}");
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(new Date());
+            calendar.add(Calendar.DAY_OF_WEEK, Calendar.DATE);
+            defaultProcess.setEndSubmitTime(calendar.getTime());
+            contestProcessDAO.insert(defaultProcess);
+        }
+        return new ContestDTO(contest, false, false, false,
+                false, false, false);
     }
 
     @Override
-    public ContestDTO edit(ContestEditRequest request, String account) {
+    public void edit(ContestEditRequest request, String account) {
         Contest contest = contestDAO.findById(request.getContestId())
                 .orElseThrow(() -> new BizException(ResultEnum.CONTEST_NOT_EXIST));
         if(!contest.getCreator().getAccount().equals(account)) {
@@ -47,7 +69,6 @@ public class ContestServiceImpl implements ContestService {
         }
         BeanUtils.copyProperties(request, contest);
         contestDAO.update(contest);
-        return new ContestDTO(contest);
     }
 
     @Override
@@ -64,7 +85,8 @@ public class ContestServiceImpl implements ContestService {
     public ContestDTO getInfo(Long contestId) {
         Contest contest = contestDAO.findById(contestId)
                 .orElseThrow(() -> new BizException(ResultEnum.CONTEST_NOT_EXIST));
-        return new ContestDTO(contest);
+        return new ContestDTO(contest, true, true, true,
+                false, true, true);
     }
 
     @Override
@@ -76,7 +98,8 @@ public class ContestServiceImpl implements ContestService {
                 .flatMap(list -> list.stream().findFirst())
                 .orElse(null);
         Page<Contest> contests = contestDAO.findByCreatorAndNameLikeAndStatusIn(user, name, request.getStatus(), request.getPagination(), request.getSorter());
-        return contests.map(ContestDTO::new);
+        return contests.map(contest -> new ContestDTO(contest, false, false, false,
+                false, false, false));
     }
 
     @Override
@@ -94,6 +117,7 @@ public class ContestServiceImpl implements ContestService {
                 .flatMap(list -> list.stream().findFirst())
                 .orElse(null);
         Page<Contest> contests = contestDAO.findByNameLikeAndStatusInAndCreatorNameLikeAndCreatorCollegeLike(name, request.getStatus(), creatorName, creatorCollege, request.getPagination(), request.getSorter());
-        return contests.map(ContestDTO::new);
+        return contests.map(contest -> new ContestDTO(contest, true, false, false,
+                false, false, false));
     }
 }

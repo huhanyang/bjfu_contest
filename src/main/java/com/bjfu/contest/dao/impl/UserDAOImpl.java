@@ -2,6 +2,7 @@ package com.bjfu.contest.dao.impl;
 
 import com.bjfu.contest.dao.UserDAO;
 import com.bjfu.contest.enums.UserStatusEnum;
+import com.bjfu.contest.enums.UserTypeEnum;
 import com.bjfu.contest.pojo.entity.User;
 import com.bjfu.contest.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,6 +71,11 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
+    public List<User> findAllByAccountIn(List<String> accounts) {
+        return userRepository.findAllByAccountInAndStatusIn(accounts, Collections.singletonList(UserStatusEnum.ACTIVE));
+    }
+
+    @Override
     public Optional<User>  findByAccountForUpdate(String account) {
         return userRepository.findAllByAccountAndStatusInForUpdate(account, REGISTERED_STATUS_ENUMS)
                 .stream()
@@ -88,5 +94,10 @@ public class UserDAOImpl implements UserDAO {
         return userRepository.findAllByEmailAndStatusInForUpdate(email, REGISTERED_STATUS_ENUMS)
                 .stream()
                 .findFirst();
+    }
+
+    @Override
+    public List<User> findByNameLikeAndTypeIn(String name, List<UserTypeEnum> types) {
+        return userRepository.findByNameLikeAndStatusInAndTypeIn(name, Collections.singletonList(UserStatusEnum.ACTIVE), types);
     }
 }

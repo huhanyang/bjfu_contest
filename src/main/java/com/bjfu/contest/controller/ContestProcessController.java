@@ -30,9 +30,8 @@ public class ContestProcessController {
 
     @RequireLogin
     @GetMapping("/getInfo")
-    public BaseResult<ContestProcessVO> getInfo(@NotNull(message = "竞赛id不能为空!") Long contestId,
-                                                @NotNull(message = "流程id不能为空!") Long processId) {
-        ContestProcessDTO processDTO = contestProcessService.getInfo(contestId, processId);
+    public BaseResult<ContestProcessVO> getInfo(@NotNull(message = "流程id不能为空!") Long processId) {
+        ContestProcessDTO processDTO = contestProcessService.getInfo(processId);
         return BaseResult.success(new ContestProcessVO(processDTO));
     }
 
@@ -57,11 +56,11 @@ public class ContestProcessController {
 
     @RequireTeacher
     @PostMapping("/edit")
-    public BaseResult<ContestProcessVO> edit(@Validated @RequestBody ProcessEditRequest request) {
+    public BaseResult<Void> edit(@Validated @RequestBody ProcessEditRequest request) {
         UserDTO userDTO = UserInfoContextUtil.getUserInfo()
                 .orElseThrow(() -> new AppException(ResultEnum.USER_CONTEXT_ERROR));
-        ContestProcessDTO processDTO = contestProcessService.edit(request, userDTO.getAccount());
-        return BaseResult.success(new ContestProcessVO(processDTO));
+        contestProcessService.edit(request, userDTO.getAccount());
+        return BaseResult.success();
     }
 
     @RequireTeacher

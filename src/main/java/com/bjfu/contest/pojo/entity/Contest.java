@@ -4,11 +4,7 @@ import com.bjfu.contest.enums.ContestStatusEnum;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Enumerated;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.util.List;
 
 /**
@@ -61,6 +57,7 @@ public class Contest extends BaseEntity {
      * 竞赛流程
      */
     @OneToMany(mappedBy = "contest")
+    @OrderBy("sort asc")
     private List<ContestProcess> processes;
     /**
      * 竞赛指导教师列表

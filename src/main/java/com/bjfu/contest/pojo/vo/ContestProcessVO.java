@@ -6,6 +6,9 @@ import lombok.Data;
 import org.springframework.beans.BeanUtils;
 
 import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Data
 public class ContestProcessVO {
@@ -13,14 +16,26 @@ public class ContestProcessVO {
     public ContestProcessVO() {}
 
     public ContestProcessVO(ContestProcessDTO processDTO) {
-        BeanUtils.copyProperties(processDTO, this, "contest");
-        this.contest = new ContestVO(processDTO.getContest());
+        BeanUtils.copyProperties(processDTO, this);
+        this.contest = Optional.ofNullable(processDTO.getContest()).map(ContestVO::new).orElse(null);
+        this.groups = Optional.ofNullable(processDTO.getGroups())
+                .map(groups -> groups.stream().map(ContestProcessGroupVO::new).collect(Collectors.toList()))
+                .orElse(null);
     }
 
     /**
-     * 流程id
+     * 主键
      */
     private Long id;
+    /**
+     * 创建时间
+     */
+    private Date createdTime;
+    /**
+     * 修改时间
+     */
+    private Date lastModifiedTime;
+
     /**
      * 对应竞赛
      */
@@ -46,15 +61,20 @@ public class ContestProcessVO {
      */
     private String submitList;
     /**
-     * 流程开始的时间
-     */
-    private Date startTime;
-    /**
      * 停止提交的时间
      */
     private Date endSubmitTime;
     /**
+     * 流程开始的时间
+     */
+    private Date startTime;
+    /**
      * 流程结束的时间
      */
     private Date finishTime;
+
+    /**
+     * 流程中的队伍
+     */
+    private List<ContestProcessGroupVO> groups;
 }

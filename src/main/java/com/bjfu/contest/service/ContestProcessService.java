@@ -14,16 +14,15 @@ public interface ContestProcessService {
 
     /**
      * 获取流程信息
-     * @param contestId 竞赛id
      * @param processId 流程id
      * @return 流程
      */
-    ContestProcessDTO getInfo(Long contestId, Long processId);
+    ContestProcessDTO getInfo(Long processId);
 
     /**
-     * 列出竞赛流程
-     * @param contestId
-     * @return
+     * 列出竞赛里的所有流程
+     * @param contestId 竞赛id
+     * @return 竞赛流程列表
      */
     List<ContestProcessDTO> listAll(Long contestId);
 
@@ -39,9 +38,8 @@ public interface ContestProcessService {
      * 修改竞赛流程信息
      * @param request 请求
      * @param account 账号
-     * @return 流程
      */
-    ContestProcessDTO edit(ProcessEditRequest request, String account);
+    void edit(ProcessEditRequest request, String account);
 
     /**
      * 删除竞赛流程

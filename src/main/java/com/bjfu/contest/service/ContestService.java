@@ -25,9 +25,8 @@ public interface ContestService {
      * 编辑竞赛信息
      * @param request 请求
      * @param account 操作人账号
-     * @return 修改后的竞赛
      */
-    ContestDTO edit(ContestEditRequest request, String account);
+    void edit(ContestEditRequest request, String account);
 
     /**
      * 删除竞赛

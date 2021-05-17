@@ -1,12 +1,10 @@
 package com.bjfu.contest.pojo.entity;
 
-import com.bjfu.contest.enums.ContestGroupStatusEnum;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Enumerated;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import java.util.List;
@@ -40,16 +38,11 @@ public class ContestGroup extends BaseEntity {
     @ManyToOne
     private User teacher;
     /**
-     * 队伍状态
-     */
-    @Enumerated
-    @Column(nullable = false)
-    private ContestGroupStatusEnum status;
-    /**
      * 队伍介绍
      */
     @Column(length=256)
     private String introduction;
+
     /**
      * 队伍成员
      */

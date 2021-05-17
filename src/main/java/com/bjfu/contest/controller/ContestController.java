@@ -40,11 +40,11 @@ public class ContestController {
 
     @RequireTeacher
     @PostMapping("/edit")
-    public BaseResult<ContestVO> edit(@Validated @RequestBody ContestEditRequest request) {
+    public BaseResult<Void> edit(@Validated @RequestBody ContestEditRequest request) {
         UserDTO userDTO = UserInfoContextUtil.getUserInfo()
                 .orElseThrow(() -> new AppException(ResultEnum.USER_CONTEXT_ERROR));
-        ContestDTO contestDTO = contestService.edit(request, userDTO.getAccount());
-        return BaseResult.success(new ContestVO(contestDTO));
+        contestService.edit(request, userDTO.getAccount());
+        return BaseResult.success();
     }
 
     @RequireTeacher

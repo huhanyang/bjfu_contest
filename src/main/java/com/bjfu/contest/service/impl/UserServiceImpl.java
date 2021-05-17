@@ -20,6 +20,8 @@ import javax.transaction.Transactional;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -30,7 +32,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserDTO register(UserRegisterRequest request) {
+    public void register(UserRegisterRequest request) {
         if(request.getType().equals(UserTypeEnum.ADMIN)) {
             throw new BizException(ResultEnum.WRONG_REQUEST_PARAMS);
         }
@@ -63,7 +65,6 @@ public class UserServiceImpl implements UserService {
         // todo 发激活邮件
         String token = JwtUtil.generateToken(Collections.singletonMap("userId", user.getId().toString()));
         log.error("新注册账号: token={}", token);
-        return new UserDTO(user);
     }
 
     /**
@@ -123,7 +124,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserDTO editSelfInfo(UserEditSelfInfoRequest request, String account) {
+    public void editSelfInfo(UserEditSelfInfoRequest request, String account) {
         User user = userDAO.findByAccount(account)
                 .orElseThrow(() -> new BizException(ResultEnum.USER_DONT_EXIST));
         if(user.getStatus().equals(UserStatusEnum.BANNED)) {
@@ -131,12 +132,11 @@ public class UserServiceImpl implements UserService {
         }
         BeanUtils.copyProperties(request, user);
         userDAO.update(user);
-        return new UserDTO(user);
     }
 
     @Override
     @Transactional
-    public UserDTO editUserInfo(UserEditUserInfoRequest request, Long userId) {
+    public void editUserInfo(UserEditUserInfoRequest request, Long userId) {
         userDAO.findById(userId)
                 .filter(user -> user.getType().equals(UserTypeEnum.ADMIN))
                 .or(()->{throw new BizException(ResultEnum.REQUIRE_ADMIN);});
@@ -168,7 +168,6 @@ public class UserServiceImpl implements UserService {
         }
         BeanUtils.copyProperties(request, user);
         userDAO.update(user);
-        return new UserDTO(user);
     }
 
     @Override
@@ -210,10 +209,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO getUserInfo(String account) {
-        User user = userDAO.findByAccount(account)
+    public UserDTO getMyInfo(Long userId) {
+        User user = userDAO.findById(userId)
                 .orElseThrow(() -> new BizException(ResultEnum.USER_DONT_EXIST));
-        return new UserDTO(user);
+        return new UserDTO(user, true, true, true, true,
+                true, true, true);
     }
 
     @Override
@@ -221,5 +221,13 @@ public class UserServiceImpl implements UserService {
         User user = userDAO.findById(userId)
                 .orElseThrow(() -> new BizException(ResultEnum.USER_DONT_EXIST));
         return new UserDTO(user);
+    }
+
+    @Override
+    public List<UserDTO> searchByNameAndType(UserSearchRequest request) {
+        return userDAO.findByNameLikeAndTypeIn("%"+request.getName()+"%", request.getTypes())
+                .stream()
+                .map(UserDTO::new)
+                .collect(Collectors.toList());
     }
 }
