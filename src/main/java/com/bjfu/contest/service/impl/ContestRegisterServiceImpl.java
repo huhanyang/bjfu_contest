@@ -11,7 +11,6 @@ import com.bjfu.contest.pojo.dto.ContestRegisterDTO;
 import com.bjfu.contest.pojo.entity.Contest;
 import com.bjfu.contest.pojo.entity.ContestRegister;
 import com.bjfu.contest.pojo.entity.User;
-import com.bjfu.contest.pojo.request.contest.ContestListAllRequest;
 import com.bjfu.contest.pojo.request.register.RegisterBanRequest;
 import com.bjfu.contest.pojo.request.register.RegisterCreateRequest;
 import com.bjfu.contest.pojo.request.register.RegisterListAllRequest;
@@ -81,6 +80,9 @@ public class ContestRegisterServiceImpl implements ContestRegisterService {
     public void create(RegisterCreateRequest request, String account) {
         Contest contest = contestDAO.findById(request.getContestId())
                 .orElseThrow(() -> new BizException(ResultEnum.CONTEST_NOT_EXIST));
+        if(!contest.getStatus().equals(ContestStatusEnum.REGISTERING)) {
+            throw new BizException(ResultEnum.CONTEST_NOT_REGISTERING);
+        }
         User user = userDAO.findActiveUserByAccount(account)
                 .orElseThrow(() -> new BizException(ResultEnum.USER_DONT_EXIST));
         if(contestRegisterDAO.findByContestAndUserForUpdate(contest, user).isPresent()) {
@@ -113,6 +115,9 @@ public class ContestRegisterServiceImpl implements ContestRegisterService {
     public void ban(RegisterBanRequest request, String account) {
         Contest contest = contestDAO.findById(request.getContestId())
                 .orElseThrow(() -> new BizException(ResultEnum.CONTEST_NOT_EXIST));
+        if(!contest.getStatus().equals(ContestStatusEnum.REGISTERING)) {
+            throw new BizException(ResultEnum.CONTEST_NOT_REGISTERING);
+        }
         if(!contest.getCreator().getAccount().equals(account)) {
             throw new BizException(ResultEnum.NOT_CONTEST_CREATOR);
         }
@@ -129,6 +134,9 @@ public class ContestRegisterServiceImpl implements ContestRegisterService {
     public void unban(RegisterBanRequest request, String account) {
         Contest contest = contestDAO.findById(request.getContestId())
                 .orElseThrow(() -> new BizException(ResultEnum.CONTEST_NOT_EXIST));
+        if(!contest.getStatus().equals(ContestStatusEnum.REGISTERING)) {
+            throw new BizException(ResultEnum.CONTEST_NOT_REGISTERING);
+        }
         if(!contest.getCreator().getAccount().equals(account)) {
             throw new BizException(ResultEnum.NOT_CONTEST_CREATOR);
         }

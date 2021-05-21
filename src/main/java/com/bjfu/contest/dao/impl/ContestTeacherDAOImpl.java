@@ -58,8 +58,8 @@ public class ContestTeacherDAOImpl implements ContestTeacherDAO {
     }
 
     @Override
-    public Optional<ContestTeacher> findByContestAndTeacherInForUpdate(Contest contest, List<User> teachers) {
-        return contestTeacherRepository.findByContestAndTeacherInForUpdate(contest, teachers);
+    public List<ContestTeacher> findByContestAndTeachersInForUpdate(Contest contest, List<User> teachers) {
+        return contestTeacherRepository.findByContestAndTeachersInForUpdate(contest, teachers);
     }
 
     @Override

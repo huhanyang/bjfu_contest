@@ -7,6 +7,7 @@ import com.bjfu.contest.pojo.dto.ContestGroupDTO;
 import com.bjfu.contest.pojo.dto.UserDTO;
 import com.bjfu.contest.pojo.request.group.GroupCreateRequest;
 import com.bjfu.contest.pojo.request.group.GroupEditRequest;
+import com.bjfu.contest.pojo.request.group.GroupKickMemberRequest;
 import com.bjfu.contest.pojo.vo.ContestGroupVO;
 import com.bjfu.contest.security.annotation.RequireLogin;
 import com.bjfu.contest.security.annotation.RequireStudent;
@@ -76,7 +77,7 @@ public class ContestGroupController {
         return BaseResult.success(new ContestGroupVO(groupDTO));
     }
 
-    @RequireStudent
+    @RequireLogin
     @PostMapping("/edit")
     public BaseResult<Void> edit(@Validated @RequestBody GroupEditRequest request) {
         UserDTO userDTO = UserInfoContextUtil.getUserInfo()
@@ -85,12 +86,30 @@ public class ContestGroupController {
         return BaseResult.success();
     }
 
-    @RequireStudent
+    @RequireLogin
     @DeleteMapping("/delete")
     public BaseResult<Void> delete(@NotNull(message = "队伍id不为空") Long groupId) {
         UserDTO userDTO = UserInfoContextUtil.getUserInfo()
                 .orElseThrow(() -> new AppException(ResultEnum.USER_CONTEXT_ERROR));
         contestGroupService.delete(groupId, userDTO.getAccount());
+        return BaseResult.success();
+    }
+
+    @RequireStudent
+    @PostMapping("/join")
+    public BaseResult<Void> join(@NotNull(message = "队伍id不为空") Long groupId) {
+        UserDTO userDTO = UserInfoContextUtil.getUserInfo()
+                .orElseThrow(() -> new AppException(ResultEnum.USER_CONTEXT_ERROR));
+        contestGroupService.join(groupId, userDTO.getAccount());
+        return BaseResult.success();
+    }
+
+    @RequireLogin
+    @PostMapping("/kickMember")
+    public BaseResult<Void> kickMember(@Validated @RequestBody GroupKickMemberRequest request) {
+        UserDTO userDTO = UserInfoContextUtil.getUserInfo()
+                .orElseThrow(() -> new AppException(ResultEnum.USER_CONTEXT_ERROR));
+        contestGroupService.kickMember(request, userDTO.getAccount());
         return BaseResult.success();
     }
 

@@ -24,6 +24,18 @@ public interface ContestTeacherService {
      */
     void delete(TeacherDeleteRequest request, String account);
     /**
+     * 指导教师加入队伍
+     * @param groupId 队伍id
+     * @param account 操作人账号
+     */
+    void joinGroup(Long groupId, String account);
+    /**
+     * 指导教师退出队伍
+     * @param groupId 队伍id
+     * @param account 操作人账号
+     */
+    void quitGroup(Long groupId, String account);
+    /**
      * 获取指导教师列表
      * @param contestId 竞赛id
      * @return 指导教师

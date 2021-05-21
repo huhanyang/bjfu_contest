@@ -14,6 +14,7 @@ public interface ContestGroupDAO {
     ContestProcessGroup addToProcess(ContestGroup group, ContestProcess process);
     List<ContestProcessGroup> addAllToProcess(ContestProcess process, List<ContestGroup> groups);
     ContestGroupMember addMember(Contest contest, ContestGroup group, ContestRegister member);
+    void deleteMember(Contest contest, ContestGroup group, ContestRegister member);
     List<ContestGroup> findAllByContestAndMember(Contest contest, ContestRegister member);
     List<ContestGroup> findAllByContestAndMemberForUpdate(Contest contest, ContestRegister member);
     List<ContestGroup> findAllByContest(Contest contest);

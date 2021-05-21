@@ -49,6 +49,24 @@ public class ContestTeacherController {
         return BaseResult.success();
     }
 
+    @RequireTeacher
+    @PostMapping("/joinGroup")
+    public BaseResult<Void> joinGroup(@NotNull(message = "队伍id不能为空") Long groupId) {
+        UserDTO userDTO = UserInfoContextUtil.getUserInfo()
+                .orElseThrow(() -> new AppException(ResultEnum.USER_CONTEXT_ERROR));
+        contestTeacherService.joinGroup(groupId, userDTO.getAccount());
+        return BaseResult.success();
+    }
+
+    @RequireTeacher
+    @PostMapping("/quitGroup")
+    public BaseResult<Void> quitGroup(@NotNull(message = "队伍id不能为空") Long groupId) {
+        UserDTO userDTO = UserInfoContextUtil.getUserInfo()
+                .orElseThrow(() -> new AppException(ResultEnum.USER_CONTEXT_ERROR));
+        contestTeacherService.quitGroup(groupId, userDTO.getAccount());
+        return BaseResult.success();
+    }
+
     @RequireLogin
     @GetMapping("/listAll")
     public BaseResult<List<UserVO>> listAll(@NotNull(message = "竞赛id不能为空") Long contestId) {

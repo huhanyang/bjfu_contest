@@ -22,7 +22,7 @@ public interface ContestTeacherRepository extends JpaRepository<ContestTeacher, 
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query(value = "select teacher from ContestTeacher teacher where teacher.contest=?1 and teacher.teacher in ?2")
-    Optional<ContestTeacher> findByContestAndTeacherInForUpdate(Contest contest, List<User> teacher);
+    List<ContestTeacher> findByContestAndTeachersInForUpdate(Contest contest, List<User> teacher);
 
     List<ContestTeacher> findAllByContest(Contest contest);
     List<ContestTeacher> findAllByTeacher(User teacher);

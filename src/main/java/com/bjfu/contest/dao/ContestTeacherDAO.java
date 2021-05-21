@@ -17,7 +17,7 @@ public interface ContestTeacherDAO {
     ContestTeacher update(ContestTeacher contestTeacher);
     Optional<ContestTeacher> findByContestAndTeacher(Contest contest, User teacher);
     Optional<ContestTeacher> findByContestAndTeacherForUpdate(Contest contest, User teacher);
-    Optional<ContestTeacher> findByContestAndTeacherInForUpdate(Contest contest, List<User> teachers);
+    List<ContestTeacher> findByContestAndTeachersInForUpdate(Contest contest, List<User> teachers);
     List<ContestTeacher> findAllByContest(Contest contest);
     List<ContestTeacher> findAllByTeacher(User teacher);
     Page<ContestTeacher> findAllByTeacherAndContestNameLikeAndContestStatusInAndCreatorNameLikeAndCreatorCollegeLike(User teacher,

@@ -4,6 +4,7 @@ import com.bjfu.contest.dao.ContestDAO;
 import com.bjfu.contest.dao.ContestGroupDAO;
 import com.bjfu.contest.dao.ContestProcessDAO;
 import com.bjfu.contest.enums.ContestProcessStatusEnum;
+import com.bjfu.contest.enums.ContestStatusEnum;
 import com.bjfu.contest.enums.ResultEnum;
 import com.bjfu.contest.exception.BizException;
 import com.bjfu.contest.pojo.dto.ContestGroupDTO;
@@ -56,21 +57,27 @@ public class ContestProcessServiceImpl implements ContestProcessService {
     @Override
     @Transactional
     public ContestProcessDTO create(ProcessCreateRequest request, String account) {
+        // 加锁获取竞赛
         Contest contest = contestDAO.findByIdForUpdate(request.getContestId())
                 .orElseThrow(() -> new BizException(ResultEnum.CONTEST_NOT_EXIST));
         // 验证竞赛创建者
         if(!contest.getCreator().getAccount().equals(account)) {
             throw new BizException(ResultEnum.NOT_CONTEST_CREATOR);
         }
+        // 验证竞赛未结束
+        if(!contest.getStatus().equals(ContestStatusEnum.FINISH)) {
+            throw new BizException(ResultEnum.CONTEST_FINISH);
+        }
+        // 验证最后一个流程已经结束
         Optional<ContestProcess> lastProcess = contest.getProcesses()
                 .stream()
                 .max(Comparator.comparingInt(ContestProcess::getSort));
         ContestProcessStatusEnum lastProcessStatus = lastProcess.map(ContestProcess::getStatus)
                 .orElse(ContestProcessStatusEnum.FINISH);
-        // 验证之前的流程全部结束
         if(!lastProcessStatus.equals(ContestProcessStatusEnum.FINISH)) {
             throw new BizException(ResultEnum.EXIST_PROCESS_NOT_FINISH);
         }
+        // 保存新流程
         Integer lastProcessSort = lastProcess.map(ContestProcess::getSort).orElse(0);
         ContestProcess contestProcess = new ContestProcess();
         BeanUtils.copyProperties(request, contestProcess);
@@ -83,19 +90,26 @@ public class ContestProcessServiceImpl implements ContestProcessService {
     @Override
     @Transactional
     public void edit(ProcessEditRequest request, String account) {
+        // 加锁获取竞赛
         Contest contest = contestDAO.findByIdForUpdate(request.getContestId())
                 .orElseThrow(() -> new BizException(ResultEnum.CONTEST_NOT_EXIST));
         // 验证竞赛创建者
         if(!contest.getCreator().getAccount().equals(account)) {
             throw new BizException(ResultEnum.NOT_CONTEST_CREATOR);
         }
-        ContestProcess process = contestProcessDAO.findById(request.getProcessId())
+        // 加锁获取流程
+        ContestProcess process = contestProcessDAO.findByIdForUpdate(request.getProcessId())
                 .filter(contestProcess -> contestProcess.getContest().getId().equals(contest.getId()))
                 .orElseThrow(() -> new BizException(ResultEnum.PROCESS_NOT_EXIST));
-        // 验证流程未完成
-        if(process.getStatus().equals(ContestProcessStatusEnum.FINISH)) {
-            throw new BizException(ResultEnum.PROCESS_FINISHED);
+        // 验证此流程为最后一个流程
+        Optional<Long> lastProcessId = contest.getProcesses()
+                .stream()
+                .max(Comparator.comparingInt(ContestProcess::getSort))
+                .map(ContestProcess::getId);
+        if(!lastProcessId.map(id -> id.equals(process.getId())).orElse(false)) {
+            throw new BizException(ResultEnum.PROCESS_NOT_LAST);
         }
+        // 更新流程状态
         BeanUtils.copyProperties(request, process);
         contestProcessDAO.update(process);
     }
@@ -103,19 +117,25 @@ public class ContestProcessServiceImpl implements ContestProcessService {
     @Override
     @Transactional
     public void delete(Long contestId, Long processId, String account) {
+        // 加锁获取竞赛
         Contest contest = contestDAO.findByIdForUpdate(contestId)
                 .orElseThrow(() -> new BizException(ResultEnum.CONTEST_NOT_EXIST));
         // 验证竞赛创建者
         if(!contest.getCreator().getAccount().equals(account)) {
             throw new BizException(ResultEnum.NOT_CONTEST_CREATOR);
         }
-        ContestProcess process = contestProcessDAO.findById(processId)
-                .filter(contestProcess -> contestProcess.getContest().getId().equals(contest.getId()))
+        // 加锁获取流程
+        ContestProcess process = contestProcessDAO.findByIdForUpdate(processId)
                 .orElseThrow(() -> new BizException(ResultEnum.PROCESS_NOT_EXIST));
-        // 验证流程是否为创建状态
-        if(!process.getStatus().equals(ContestProcessStatusEnum.CREATING)) {
-            throw new BizException(ResultEnum.PROCESS_NOT_CREATING);
+        // 验证此流程为最后一个流程
+        Optional<Long> lastProcessId = contest.getProcesses()
+                .stream()
+                .max(Comparator.comparingInt(ContestProcess::getSort))
+                .map(ContestProcess::getId);
+        if(!lastProcessId.map(id -> id.equals(process.getId())).orElse(false)) {
+            throw new BizException(ResultEnum.PROCESS_NOT_LAST);
         }
+        // 删除
         contestProcessDAO.delete(process);
     }
 
@@ -150,7 +170,8 @@ public class ContestProcessServiceImpl implements ContestProcessService {
     @Override
     @Transactional
     public void promoteGroups(ProcessPromoteGroupsRequest request, String account) {
-        ContestProcess process = contestProcessDAO.findById(request.getProcessId())
+        // 加锁获取流程
+        ContestProcess process = contestProcessDAO.findByIdForUpdate(request.getProcessId())
                 .orElseThrow(() -> new BizException(ResultEnum.PROCESS_NOT_EXIST));
         // 竞赛创建人验证
         if(!process.getContest().getCreator().getAccount().equals(account)) {
@@ -164,10 +185,6 @@ public class ContestProcessServiceImpl implements ContestProcessService {
             // 确认存在上一个sort连续的流程
             ContestProcess beforeProcess = contestProcessDAO.findByContestAndSort(process.getContest(), process.getSort() - 1)
                     .orElseThrow(() -> new BizException(ResultEnum.PROCESS_SORT_ERROR));
-            // 验证上一个流程为结束状态
-            if(!beforeProcess.getStatus().equals(ContestProcessStatusEnum.FINISH)) {
-                throw new BizException(ResultEnum.PROCESS_BEFORE_STATUS_ERROR);
-            }
             // 从上一个流程队伍中过滤出存在的队伍
             List<ContestGroup> groups = contestGroupDAO.findAllByProcessAndIdInForUpdate(beforeProcess, request.getGroupIds());
             Set<Long> existGroupIds = contestGroupDAO.findAllByProcess(process)
@@ -191,13 +208,13 @@ public class ContestProcessServiceImpl implements ContestProcessService {
             // 保存这些队伍
             contestGroupDAO.addAllToProcess(process, groups);
         }
-        // todo 更新上一流程中的状态
     }
 
     @Override
     @Transactional
     public void demoteGroups(ProcessDemoteGroupsRequest request, String account) {
-        ContestProcess process = contestProcessDAO.findById(request.getProcessId())
+        // 加锁获取流程
+        ContestProcess process = contestProcessDAO.findByIdForUpdate(request.getProcessId())
                 .orElseThrow(() -> new BizException(ResultEnum.PROCESS_NOT_EXIST));
         // 竞赛创建人验证
         if(!process.getContest().getCreator().getAccount().equals(account)) {
@@ -209,6 +226,5 @@ public class ContestProcessServiceImpl implements ContestProcessService {
         }
         // 删除流程队伍关联关系
         contestGroupDAO.deleteGroupsInProcessByProcessAndGroupIdIn(process, request.getGroupIds());
-        // todo 更新上一流程中的状态
     }
 }

@@ -62,6 +62,11 @@ public class ContestGroupDAOImpl implements ContestGroupDAO {
     }
 
     @Override
+    public void deleteMember(Contest contest, ContestGroup group, ContestRegister member) {
+        contestGroupMemberRepository.deleteByContestAndGroupAndMember(contest, group, member);
+    }
+
+    @Override
     public void delete(ContestGroup group) {
         contestGroupMemberRepository.deleteAll(group.getMembers());
         contestProcessGroupRepository.deleteAll(group.getProcesses());

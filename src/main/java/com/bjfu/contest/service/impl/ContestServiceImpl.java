@@ -3,6 +3,7 @@ package com.bjfu.contest.service.impl;
 import com.bjfu.contest.dao.ContestDAO;
 import com.bjfu.contest.dao.ContestProcessDAO;
 import com.bjfu.contest.dao.UserDAO;
+import com.bjfu.contest.enums.ContestStatusEnum;
 import com.bjfu.contest.enums.ResultEnum;
 import com.bjfu.contest.exception.BizException;
 import com.bjfu.contest.pojo.dto.ContestDTO;
@@ -43,6 +44,7 @@ public class ContestServiceImpl implements ContestService {
         BeanUtils.copyProperties(request, contest);
         contest.setCreator(user);
         contestDAO.insert(contest);
+        // 创建默认报名组队流程
         if(request.getIsCreateDefaultProcess()) {
             ContestProcess defaultProcess = new ContestProcess();
             defaultProcess.setContest(contest);
@@ -61,9 +63,11 @@ public class ContestServiceImpl implements ContestService {
     }
 
     @Override
+    @Transactional
     public void edit(ContestEditRequest request, String account) {
-        Contest contest = contestDAO.findById(request.getContestId())
+        Contest contest = contestDAO.findByIdForUpdate(request.getContestId())
                 .orElseThrow(() -> new BizException(ResultEnum.CONTEST_NOT_EXIST));
+        // 创建人校验
         if(!contest.getCreator().getAccount().equals(account)) {
             throw new BizException(ResultEnum.NOT_CONTEST_CREATOR);
         }
@@ -72,9 +76,11 @@ public class ContestServiceImpl implements ContestService {
     }
 
     @Override
+    @Transactional
     public void delete(Long contestId, String account) {
-        Contest contest = contestDAO.findById(contestId)
+        Contest contest = contestDAO.findByIdForUpdate(contestId)
                 .orElseThrow(() -> new BizException(ResultEnum.CONTEST_NOT_EXIST));
+        // 创建人校验
         if(!contest.getCreator().getAccount().equals(account)) {
             throw new BizException(ResultEnum.NOT_CONTEST_CREATOR);
         }

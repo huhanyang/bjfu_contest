@@ -9,15 +9,17 @@ import lombok.Getter;
 @Getter
 public enum ContestStatusEnum {
 
-    CREATING("创建中"),
-    REGISTERING("报名中"),
-    RUNNING("进程中"),
-    FINISH("结束"),
-    DELETE("软删除");
+    CREATING("创建中", 0),
+    REGISTERING("报名中", 1),
+    RUNNING("进程中", 2),
+    FINISH("结束", 3),
+    DELETE("软删除", 4);
 
     private final String msg;
+    private final Integer weight;
 
-    ContestStatusEnum(String msg) {
+    ContestStatusEnum(String msg, Integer weight) {
         this.msg = msg;
+        this.weight = weight;
     }
 }

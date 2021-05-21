@@ -51,16 +51,16 @@ public class UserInterceptor implements HandlerInterceptor {
             boolean requireTeacher = handlerMethod.getMethodAnnotation(RequireTeacher.class) != null;
             boolean requireAdmin = handlerMethod.getMethodAnnotation(RequireAdmin.class) != null;
             requireLogin = requireLogin || requireAdmin || requireStudent || requireTeacher;
-            UserDTO userInfo = null;
+            // 尝试获取用户登录信息
+            UserDTO userInfo = Optional.ofNullable(request.getHeader("Authorization"))
+                    .map(token -> token.substring(7)) // 前缀"Bearer "清除
+                    .map(JwtUtil::verifyToken)
+                    .map(claimMap -> claimMap.get("userId").asString())
+                    .map(Long::valueOf)
+                    .map(userId -> userService.getUserInfo(userId))
+                    .orElse(null);
             // 需要登录则检查是否登录以及是否被封号
             if(requireLogin) {
-                userInfo = Optional.ofNullable(request.getHeader("Authorization"))
-                        .map(token -> token.substring(7)) // 前缀"Bearer "清除
-                        .map(JwtUtil::verifyToken)
-                        .map(claimMap -> claimMap.get("userId").asString())
-                        .map(Long::valueOf)
-                        .map(userId -> userService.getUserInfo(userId))
-                        .orElse(null);
                 if(userInfo == null) {
                     ResponseUtil.writeResultToResponse(ResultEnum.NEED_TO_LOGIN, response);
                     return false;

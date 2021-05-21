@@ -9,6 +9,7 @@ import com.bjfu.contest.pojo.dto.ContestGroupDTO;
 import com.bjfu.contest.pojo.entity.*;
 import com.bjfu.contest.pojo.request.group.GroupCreateRequest;
 import com.bjfu.contest.pojo.request.group.GroupEditRequest;
+import com.bjfu.contest.pojo.request.group.GroupKickMemberRequest;
 import com.bjfu.contest.service.ContestGroupService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -116,13 +117,30 @@ public class ContestGroupServiceImpl implements ContestGroupService {
     @Override
     @Transactional
     public void edit(GroupEditRequest request, String account) {
+        // 加锁获取队伍
         ContestGroup group = contestGroupDAO.findByIdForUpdate(request.getGroupId())
                 .orElseThrow(() -> new BizException(ResultEnum.GROUP_NOT_EXIST));
-        if(!group.getContest().getStatus().equals(ContestStatusEnum.REGISTERING)) {
-            throw new BizException(ResultEnum.CONTEST_NOT_REGISTERING);
-        }
-        if(!group.getCaptain().getAccount().equals(account)) {
+        Contest contest = group.getContest();
+        // 验证是队长或竞赛创建人
+        if(!group.getCaptain().getAccount().equals(account) && !contest.getCreator().getAccount().equals(account)) {
             throw new BizException(ResultEnum.NOT_GROUP_CAPTAIN);
+        }
+        // 队长需要的校验
+        if(group.getCaptain().getAccount().equals(account)) {
+            // 验证竞赛注册状态
+            if(!contest.getStatus().equals(ContestStatusEnum.REGISTERING)) {
+                throw new BizException(ResultEnum.CONTEST_NOT_REGISTERING);
+            }
+            // 验证竞赛首个流程是运行状态
+            ContestProcess firstProcess = contest.getProcesses()
+                    .stream()
+                    .findFirst().orElse(null);
+            Boolean isOnlyExistRegisterProcess = Optional.ofNullable(firstProcess)
+                    .map(process -> process.getStatus().equals(ContestProcessStatusEnum.RUNNING))
+                    .orElseThrow(() -> new BizException(ResultEnum.REGISTER_PROCESS_NOT_EXIST));
+            if(!isOnlyExistRegisterProcess) {
+                throw new BizException(ResultEnum.REGISTER_PROCESS_NOT_RUNNING);
+            }
         }
         BeanUtils.copyProperties(request, group);
         contestGroupDAO.update(group);
@@ -131,14 +149,86 @@ public class ContestGroupServiceImpl implements ContestGroupService {
     @Override
     @Transactional
     public void delete(Long groupId, String account) {
+        // 加锁获取队伍
         ContestGroup group = contestGroupDAO.findByIdForUpdate(groupId)
                 .orElseThrow(() -> new BizException(ResultEnum.GROUP_NOT_EXIST));
-        if(!group.getContest().getStatus().equals(ContestStatusEnum.REGISTERING)) {
+        Contest contest = group.getContest();
+        // 验证竞赛是注册状态
+        if(!contest.getStatus().equals(ContestStatusEnum.REGISTERING)) {
             throw new BizException(ResultEnum.CONTEST_NOT_REGISTERING);
         }
-        if(!group.getCaptain().getAccount().equals(account)) {
+        // 验证是队长或竞赛创建人
+        if(!group.getCaptain().getAccount().equals(account) && !contest.getCreator().getAccount().equals(account)) {
             throw new BizException(ResultEnum.NOT_GROUP_CAPTAIN);
         }
+        // 删除队伍
         contestGroupDAO.delete(group);
+    }
+
+    @Override
+    @Transactional
+    public void join(Long groupId, String account) {
+        // 加锁获取队伍
+        ContestGroup group = contestGroupDAO.findByIdForUpdate(groupId)
+                .orElseThrow(() -> new BizException(ResultEnum.GROUP_NOT_EXIST));
+        Contest contest = group.getContest();
+        // 确认竞赛为注册状态
+        if(!contest.getStatus().equals(ContestStatusEnum.REGISTERING)) {
+            throw new BizException(ResultEnum.CONTEST_NOT_REGISTERING);
+        }
+        // 查询竞赛首个流程是否为运行状态
+        ContestProcess firstProcess = group.getContest().getProcesses()
+                .stream()
+                .findFirst().orElse(null);
+        Boolean isOnlyExistRegisterProcess = Optional.ofNullable(firstProcess)
+                .map(process -> process.getStatus().equals(ContestProcessStatusEnum.RUNNING))
+                .orElseThrow(() -> new BizException(ResultEnum.REGISTER_PROCESS_NOT_EXIST));
+        if(!isOnlyExistRegisterProcess) {
+            throw new BizException(ResultEnum.REGISTER_PROCESS_NOT_RUNNING);
+        }
+        User user = userDAO.findByAccount(account)
+                .orElseThrow(() -> new BizException(ResultEnum.USER_DONT_EXIST));
+        // 判断是否报名竞赛
+        ContestRegister userRegister = contestRegisterDAO.findByContestAndUserForUpdate(contest, user)
+                .orElseThrow(() -> new BizException(ResultEnum.USER_NOT_REGISTERED));
+        // 判断是否参加过同一个竞赛里的其他队伍
+        if(!contestGroupDAO.findAllByContestAndMemberForUpdate(contest, userRegister).isEmpty()) {
+            throw new BizException(ResultEnum.HAS_JOINED_GROUP);
+        }
+        contestGroupDAO.addMember(contest, group, userRegister);
+    }
+
+    @Override
+    @Transactional
+    public void kickMember(GroupKickMemberRequest request, String account) {
+        // 加锁获取队伍
+        ContestGroup group = contestGroupDAO.findByIdForUpdate(request.getGroupId())
+                .orElseThrow(() -> new BizException(ResultEnum.GROUP_NOT_EXIST));
+        Contest contest = group.getContest();
+        // 确认竞赛为注册状态
+        if(!contest.getStatus().equals(ContestStatusEnum.REGISTERING)) {
+            throw new BizException(ResultEnum.CONTEST_NOT_REGISTERING);
+        }
+        // 验证是队长或竞赛创建人
+        if(!group.getCaptain().getAccount().equals(account) && !contest.getCreator().getAccount().equals(account)) {
+            throw new BizException(ResultEnum.NOT_GROUP_CAPTAIN);
+        }
+        // 查询竞赛首个流程是否为运行状态
+        ContestProcess firstProcess = group.getContest().getProcesses()
+                .stream()
+                .findFirst().orElse(null);
+        Boolean isOnlyExistRegisterProcess = Optional.ofNullable(firstProcess)
+                .map(process -> process.getStatus().equals(ContestProcessStatusEnum.RUNNING))
+                .orElseThrow(() -> new BizException(ResultEnum.REGISTER_PROCESS_NOT_EXIST));
+        if(!isOnlyExistRegisterProcess) {
+            throw new BizException(ResultEnum.REGISTER_PROCESS_NOT_RUNNING);
+        }
+        User user = userDAO.findByAccount(request.getUserAccount())
+                .orElseThrow(() -> new BizException(ResultEnum.USER_DONT_EXIST));
+        // 判断是否报名竞赛
+        ContestRegister userRegister = contestRegisterDAO.findByContestAndUserForUpdate(contest, user)
+                .orElseThrow(() -> new BizException(ResultEnum.USER_NOT_REGISTERED));
+        // 删除关系
+        contestGroupDAO.deleteMember(contest, group, userRegister);
     }
 }
