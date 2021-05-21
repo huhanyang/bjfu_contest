@@ -66,7 +66,7 @@ public class User extends BaseEntity {
     /**
      * 学院
      */
-    @Column(length=32)
+    @Column(length=32, nullable = false)
     private String college;
     /**
      * 专业
@@ -112,10 +112,5 @@ public class User extends BaseEntity {
      */
     @OneToMany(mappedBy = "captain")
     private List<ContestGroup> captainGroups;
-    /**
-     * 参加的队伍
-     */
-    @OneToMany(mappedBy = "member")
-    private List<ContestGroupMember> groups;
 
 }

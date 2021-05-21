@@ -44,6 +44,8 @@ public enum ResultEnum {
     NOT_GROUP_CAPTAIN(223, "非队长不可修改"),
 
     USER_CONTEXT_ERROR(301, "用户信息登录上下文出错"),
+    PROCESS_SORT_ERROR(302, "流程序号错误"),
+    PROCESS_BEFORE_STATUS_ERROR(302, "上一个流程的状态错误")
 
     ;
 

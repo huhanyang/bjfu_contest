@@ -41,6 +41,7 @@ public class ContestController {
     @RequireTeacher
     @PostMapping("/edit")
     public BaseResult<Void> edit(@Validated @RequestBody ContestEditRequest request) {
+        // todo 状态变更限制
         UserDTO userDTO = UserInfoContextUtil.getUserInfo()
                 .orElseThrow(() -> new AppException(ResultEnum.USER_CONTEXT_ERROR));
         contestService.edit(request, userDTO.getAccount());

@@ -10,9 +10,7 @@ import lombok.Getter;
 public enum ContestProcessGroupStatusEnum {
 
     PREPARING("准备中"),
-    READY("准备完成"),
-    PROMOTION("成功晋级"),
-    ELIMINATE("淘汰");
+    READY("准备完成");
 
     private final String msg;
 

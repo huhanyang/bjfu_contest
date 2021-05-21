@@ -42,7 +42,7 @@ public class ContestDTO {
             if(needRegisters) {
                 this.registers = contest.getRegisters()
                         .stream()
-                        .map(contestRegister -> new ContestRegisterDTO(contestRegister, false, true))
+                        .map(contestRegister -> new ContestRegisterDTO(contestRegister, false, true, false))
                         .collect(Collectors.toList());
             }
             if(needGroups) {

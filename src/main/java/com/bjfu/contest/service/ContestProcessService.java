@@ -1,8 +1,11 @@
 package com.bjfu.contest.service;
 
+import com.bjfu.contest.pojo.dto.ContestGroupDTO;
 import com.bjfu.contest.pojo.dto.ContestProcessDTO;
 import com.bjfu.contest.pojo.request.process.ProcessCreateRequest;
+import com.bjfu.contest.pojo.request.process.ProcessDemoteGroupsRequest;
 import com.bjfu.contest.pojo.request.process.ProcessEditRequest;
+import com.bjfu.contest.pojo.request.process.ProcessPromoteGroupsRequest;
 
 import java.util.List;
 
@@ -48,4 +51,26 @@ public interface ContestProcessService {
      * @param account 账号
      */
     void delete(Long contestId, Long processId, String account);
+
+    /**
+     * 列出可以晋升到此流程的的队伍列表
+     * @param targetProcessId 流程id
+     * @param account 账号
+     * @return 队伍列表
+     */
+    List<ContestGroupDTO> listPromotableGroups(Long targetProcessId, String account);
+
+    /**
+     * 提升队伍到新流程
+     * @param request 请求
+     * @param account 账号
+     */
+    void promoteGroups(ProcessPromoteGroupsRequest request, String account);
+
+    /**
+     * 从流程中删除队伍
+     * @param request 请求
+     * @param account 账号
+     */
+    void demoteGroups(ProcessDemoteGroupsRequest request, String account);
 }

@@ -1,5 +1,6 @@
 package com.bjfu.contest.pojo.request.contest;
 
+import com.bjfu.contest.enums.ContestStatusEnum;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 
@@ -31,6 +32,11 @@ public class ContestEditRequest {
     @NotBlank(message = "竞赛描述不能为空!")
     @Length(max = 512, message = "竞赛描述最大512位!")
     private String description;
+    /**
+     * 竞赛状态
+     */
+    @NotNull(message = "竞赛状态不能为空!")
+    private ContestStatusEnum status;
     /**
      * 队伍人数上限
      */

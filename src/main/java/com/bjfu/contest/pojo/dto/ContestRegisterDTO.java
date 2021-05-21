@@ -2,6 +2,7 @@ package com.bjfu.contest.pojo.dto;
 
 import com.bjfu.contest.enums.ContestRegisterStatusEnum;
 import com.bjfu.contest.pojo.entity.Contest;
+import com.bjfu.contest.pojo.entity.ContestGroupMember;
 import com.bjfu.contest.pojo.entity.ContestRegister;
 import com.bjfu.contest.pojo.entity.User;
 import lombok.Data;
@@ -12,13 +13,15 @@ import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 public class ContestRegisterDTO {
 
     public ContestRegisterDTO() {}
 
-    public ContestRegisterDTO(ContestRegister contestRegister, boolean needContest, boolean needUser) {
+    public ContestRegisterDTO(ContestRegister contestRegister, boolean needContest, boolean needUser, boolean needGroups) {
         if(contestRegister != null) {
             BeanUtils.copyProperties(contestRegister, this, "contest", "user");
             if(needContest) {
@@ -29,6 +32,13 @@ public class ContestRegisterDTO {
             }
             if(needUser) {
                 this.user = new UserDTO(contestRegister.getUser());
+            }
+            if (needGroups) {
+                this.groups = contestRegister.getGroups().stream()
+                        .map(contestGroupMember -> new ContestGroupDTO(contestGroupMember.getGroup(),
+                                false, true, true,
+                                false, false, false))
+                        .collect(Collectors.toList());
             }
         }
     }
@@ -60,4 +70,8 @@ public class ContestRegisterDTO {
      * 状态
      */
     private ContestRegisterStatusEnum status;
+    /**
+     * 参加的队伍
+     */
+    private List<ContestGroupDTO> groups;
 }

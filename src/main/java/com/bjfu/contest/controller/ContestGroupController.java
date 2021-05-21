@@ -94,13 +94,4 @@ public class ContestGroupController {
         return BaseResult.success();
     }
 
-    @RequireLogin
-    @GetMapping("/getMyGroupByContest")
-    public BaseResult<ContestGroupVO> getMyGroupByContest(@NotNull(message = "竞赛id不能为空") Long contestId) {
-        UserDTO userDTO = UserInfoContextUtil.getUserInfo()
-                .orElseThrow(() -> new AppException(ResultEnum.USER_CONTEXT_ERROR));
-        ContestGroupDTO group = contestGroupService.getMyGroupByContest(contestId, userDTO.getAccount());
-        return BaseResult.success(new ContestGroupVO(group));
-    }
-
 }

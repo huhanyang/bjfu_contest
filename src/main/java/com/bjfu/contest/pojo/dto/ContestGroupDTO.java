@@ -35,7 +35,7 @@ public class ContestGroupDTO {
             if(needMembers) {
                 this.members = contestGroup.getMembers()
                         .stream()
-                        .map(contestGroupMember -> new UserDTO(contestGroupMember.getMember()))
+                        .map(contestGroupMember -> new UserDTO(contestGroupMember.getMember().getUser()))
                         .collect(Collectors.toList());
             }
             if(needProcesses) {

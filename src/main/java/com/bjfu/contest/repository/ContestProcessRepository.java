@@ -18,4 +18,6 @@ public interface ContestProcessRepository extends JpaRepository<ContestProcess, 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query(value = "select process from ContestProcess process where process.id=?1 and process.status in ?2")
     Optional<ContestProcess> findByIdAndStatusInForUpdate(Long id, List<ContestProcessStatusEnum> statuses);
+
+    Optional<ContestProcess> findByContestAndSortAndStatusIn(Contest contest, Integer id, List<ContestProcessStatusEnum> statuses);
 }

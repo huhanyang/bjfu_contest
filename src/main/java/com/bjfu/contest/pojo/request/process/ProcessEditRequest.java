@@ -1,8 +1,11 @@
 package com.bjfu.contest.pojo.request.process;
 
+import com.bjfu.contest.enums.ContestProcessStatusEnum;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 
+import javax.persistence.Column;
+import javax.persistence.Enumerated;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
@@ -25,6 +28,11 @@ public class ProcessEditRequest {
     @NotBlank(message = "流程名不能为空!")
     @Length(max = 32, message = "流程名最大32位!")
     private String name;
+    /**
+     * 流程状态
+     */
+    @NotNull(message = "竞赛流程状态不能为空")
+    private ContestProcessStatusEnum status;
     /**
      * 流程描述
      */

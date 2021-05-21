@@ -6,10 +6,7 @@ import com.bjfu.contest.enums.ContestStatusEnum;
 import com.bjfu.contest.enums.ResultEnum;
 import com.bjfu.contest.exception.BizException;
 import com.bjfu.contest.pojo.dto.ContestGroupDTO;
-import com.bjfu.contest.pojo.entity.Contest;
-import com.bjfu.contest.pojo.entity.ContestGroup;
-import com.bjfu.contest.pojo.entity.ContestProcess;
-import com.bjfu.contest.pojo.entity.User;
+import com.bjfu.contest.pojo.entity.*;
 import com.bjfu.contest.pojo.request.group.GroupCreateRequest;
 import com.bjfu.contest.pojo.request.group.GroupEditRequest;
 import com.bjfu.contest.service.ContestGroupService;
@@ -99,10 +96,10 @@ public class ContestGroupServiceImpl implements ContestGroupService {
         User captain = userDAO.findByAccount(account)
                 .orElseThrow(() -> new BizException(ResultEnum.USER_DONT_EXIST));
         // 判断是否报名竞赛
-        contestRegisterDAO.findByContestAndUserForUpdate(contest, captain)
+        ContestRegister captainRegister = contestRegisterDAO.findByContestAndUserForUpdate(contest, captain)
                 .orElseThrow(() -> new BizException(ResultEnum.USER_NOT_REGISTERED));
         // 判断是否参加过同一个竞赛里的其他队伍
-        if(!contestGroupDAO.findAllByContestAndMemberForUpdate(contest, captain).isEmpty()) {
+        if(!contestGroupDAO.findAllByContestAndMemberForUpdate(contest, captainRegister).isEmpty()) {
             throw new BizException(ResultEnum.HAS_JOINED_GROUP);
         }
         ContestGroup group = new ContestGroup();
@@ -110,7 +107,7 @@ public class ContestGroupServiceImpl implements ContestGroupService {
         group.setContest(contest);
         group.setCaptain(captain);
         contestGroupDAO.insert(group);
-        contestGroupDAO.addMember(contest, group, captain);
+        contestGroupDAO.addMember(contest, group, captainRegister);
         contestGroupDAO.addToProcess(group, firstProcess);
         return new ContestGroupDTO(group, false, false, false,
                 false, false, false);
@@ -143,19 +140,5 @@ public class ContestGroupServiceImpl implements ContestGroupService {
             throw new BizException(ResultEnum.NOT_GROUP_CAPTAIN);
         }
         contestGroupDAO.delete(group);
-    }
-
-    @Override
-    public ContestGroupDTO getMyGroupByContest(Long contestId, String account) {
-        Contest contest = contestDAO.findById(contestId)
-                .orElseThrow(() -> new BizException(ResultEnum.CONTEST_NOT_EXIST));
-        User user = userDAO.findByAccount(account)
-                .orElseThrow(() -> new BizException(ResultEnum.USER_DONT_EXIST));
-        ContestGroup group = contestGroupDAO.findAllByContestAndMember(contest, user)
-                .stream()
-                .findFirst()
-                .orElseThrow(() -> new BizException(ResultEnum.GROUP_NOT_EXIST));
-        return new ContestGroupDTO(group, false, true, true,
-                true, true, true);
     }
 }

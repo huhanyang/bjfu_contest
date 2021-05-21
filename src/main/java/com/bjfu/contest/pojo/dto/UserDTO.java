@@ -11,6 +11,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.OneToMany;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -85,8 +86,10 @@ public class UserDTO {
                       .collect(Collectors.toList());
           }
           if(needGroups) {
-              this.groups = user.getGroups()
+              this.groups = user.getContests()
                       .stream()
+                      .map(ContestRegister::getGroups)
+                      .flatMap(Collection::stream)
                       .map(contestGroupMember -> new ContestGroupDTO(contestGroupMember.getGroup(),
                               true, true, true,
                               false, false, false))

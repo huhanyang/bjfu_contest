@@ -1,12 +1,17 @@
 package com.bjfu.contest.controller;
 
+import com.bjfu.contest.enums.ContestProcessStatusEnum;
 import com.bjfu.contest.enums.ResultEnum;
 import com.bjfu.contest.exception.AppException;
+import com.bjfu.contest.exception.BizException;
 import com.bjfu.contest.pojo.BaseResult;
 import com.bjfu.contest.pojo.dto.ContestProcessDTO;
 import com.bjfu.contest.pojo.dto.UserDTO;
 import com.bjfu.contest.pojo.request.process.ProcessCreateRequest;
+import com.bjfu.contest.pojo.request.process.ProcessDemoteGroupsRequest;
 import com.bjfu.contest.pojo.request.process.ProcessEditRequest;
+import com.bjfu.contest.pojo.request.process.ProcessPromoteGroupsRequest;
+import com.bjfu.contest.pojo.vo.ContestGroupVO;
 import com.bjfu.contest.pojo.vo.ContestProcessVO;
 import com.bjfu.contest.security.annotation.RequireLogin;
 import com.bjfu.contest.security.annotation.RequireTeacher;
@@ -70,6 +75,36 @@ public class ContestProcessController {
         UserDTO userDTO = UserInfoContextUtil.getUserInfo()
                 .orElseThrow(() -> new AppException(ResultEnum.USER_CONTEXT_ERROR));
         contestProcessService.delete(contestId, processId, userDTO.getAccount());
+        return BaseResult.success();
+    }
+
+    @RequireLogin
+    @GetMapping("/listPromotableGroups")
+    public BaseResult<List<ContestGroupVO>> listPromotableGroups(@NotNull(message = "目标流程id不能为空!") Long targetProcessId) {
+        UserDTO userDTO = UserInfoContextUtil.getUserInfo()
+                .orElseThrow(() -> new AppException(ResultEnum.USER_CONTEXT_ERROR));
+        List<ContestGroupVO> groups = contestProcessService.listPromotableGroups(targetProcessId, userDTO.getAccount())
+                .stream()
+                .map(ContestGroupVO::new)
+                .collect(Collectors.toList());
+        return BaseResult.success(groups);
+    }
+
+    @RequireLogin
+    @PostMapping("/promoteGroups")
+    public BaseResult<Void> promoteGroups(@Validated @RequestBody ProcessPromoteGroupsRequest request) {
+        UserDTO userDTO = UserInfoContextUtil.getUserInfo()
+                .orElseThrow(() -> new AppException(ResultEnum.USER_CONTEXT_ERROR));
+        contestProcessService.promoteGroups(request, userDTO.getAccount());
+        return BaseResult.success();
+    }
+
+    @RequireLogin
+    @PostMapping("/demoteGroups")
+    public BaseResult<Void> demoteGroups(@Validated @RequestBody ProcessDemoteGroupsRequest request) {
+        UserDTO userDTO = UserInfoContextUtil.getUserInfo()
+                .orElseThrow(() -> new AppException(ResultEnum.USER_CONTEXT_ERROR));
+        contestProcessService.demoteGroups(request, userDTO.getAccount());
         return BaseResult.success();
     }
 

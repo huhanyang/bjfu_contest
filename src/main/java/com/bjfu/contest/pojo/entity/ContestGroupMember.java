@@ -30,5 +30,5 @@ public class ContestGroupMember extends BaseEntity {
      * 加入的成员
      */
     @ManyToOne
-    private User member;
+    private ContestRegister member;
 }

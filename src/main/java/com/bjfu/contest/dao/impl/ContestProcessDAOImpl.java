@@ -2,6 +2,7 @@ package com.bjfu.contest.dao.impl;
 
 import com.bjfu.contest.dao.ContestProcessDAO;
 import com.bjfu.contest.enums.ContestProcessStatusEnum;
+import com.bjfu.contest.pojo.entity.Contest;
 import com.bjfu.contest.pojo.entity.ContestProcess;
 import com.bjfu.contest.repository.ContestProcessRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,5 +51,10 @@ public class ContestProcessDAOImpl implements ContestProcessDAO {
     @Override
     public Optional<ContestProcess> findByIdForUpdate(Long id) {
         return contestProcessRepository.findByIdAndStatusInForUpdate(id, EXIST_STATUS);
+    }
+
+    @Override
+    public Optional<ContestProcess> findByContestAndSort(Contest contest, Integer sort) {
+        return contestProcessRepository.findByContestAndSortAndStatusIn(contest, sort, EXIST_STATUS);
     }
 }

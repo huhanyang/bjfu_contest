@@ -63,7 +63,7 @@ public class ContestRegisterServiceImpl implements ContestRegisterService {
                 registerMajor,
                 request.getPagination(),
                 request.getSorter())
-                .map(contestRegister -> new ContestRegisterDTO(contestRegister, false, true));
+                .map(contestRegister -> new ContestRegisterDTO(contestRegister, false, true, false));
     }
 
     @Override
@@ -72,7 +72,7 @@ public class ContestRegisterServiceImpl implements ContestRegisterService {
                 .orElseThrow(() -> new BizException(ResultEnum.USER_DONT_EXIST));
         return contestRegisterDAO.findAllByUser(user)
                 .stream()
-                .map(contestRegister -> new ContestRegisterDTO(contestRegister, true, false))
+                .map(contestRegister -> new ContestRegisterDTO(contestRegister, true, false, false))
                 .collect(Collectors.toList());
     }
 
@@ -148,6 +148,6 @@ public class ContestRegisterServiceImpl implements ContestRegisterService {
                 .orElseThrow(() -> new BizException(ResultEnum.USER_DONT_EXIST));
         ContestRegister register = contestRegisterDAO.findByContestAndUser(contest, user)
                 .orElseThrow(() -> new BizException(ResultEnum.USER_NOT_REGISTERED));
-        return new ContestRegisterDTO(register, false, false);
+        return new ContestRegisterDTO(register, false, false, true);
     }
 }

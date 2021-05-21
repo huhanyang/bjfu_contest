@@ -39,7 +39,20 @@ public class ContestGroupDAOImpl implements ContestGroupDAO {
     }
 
     @Override
-    public ContestGroupMember addMember(Contest contest, ContestGroup group, User member) {
+    public List<ContestProcessGroup> addAllToProcess(ContestProcess process, List<ContestGroup> groups) {
+        List<ContestProcessGroup> processGroups = groups.stream().map(group -> {
+            ContestProcessGroup processGroup = new ContestProcessGroup();
+            processGroup.setProcess(process);
+            processGroup.setGroup(group);
+            processGroup.setStatus(ContestProcessGroupStatusEnum.PREPARING);
+            return processGroup;
+        }).collect(Collectors.toList());
+        contestProcessGroupRepository.saveAll(processGroups);
+        return processGroups;
+    }
+
+    @Override
+    public ContestGroupMember addMember(Contest contest, ContestGroup group, ContestRegister member) {
         ContestGroupMember groupMember = new ContestGroupMember();
         groupMember.setContest(contest);
         groupMember.setGroup(group);
@@ -71,7 +84,7 @@ public class ContestGroupDAOImpl implements ContestGroupDAO {
     }
 
     @Override
-    public List<ContestGroup> findAllByContestAndMember(Contest contest, User member) {
+    public List<ContestGroup> findAllByContestAndMember(Contest contest, ContestRegister member) {
         return contestGroupMemberRepository.findAllByContestAndMember(contest, member)
                 .stream()
                 .map(ContestGroupMember::getGroup)
@@ -79,7 +92,7 @@ public class ContestGroupDAOImpl implements ContestGroupDAO {
     }
 
     @Override
-    public List<ContestGroup> findAllByContestAndMemberForUpdate(Contest contest, User member) {
+    public List<ContestGroup> findAllByContestAndMemberForUpdate(Contest contest, ContestRegister member) {
         return contestGroupMemberRepository.findAllByContestAndMemberForUpdate(contest, member)
                 .stream()
                 .map(ContestGroupMember::getGroup)
@@ -113,5 +126,26 @@ public class ContestGroupDAOImpl implements ContestGroupDAO {
                 .stream()
                 .map(ContestProcessGroup::getGroup)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ContestGroup> findAllByProcessAndIdInForUpdate(ContestProcess process, List<Long> groupIds) {
+        return contestProcessGroupRepository.findAllByProcessAndIdInForUpdate(process, groupIds)
+                .stream()
+                .map(ContestProcessGroup::getGroup)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ContestGroup> findAllByProcessAndGroupNotInForUpdate(ContestProcess process, List<ContestGroup> groups) {
+        return contestProcessGroupRepository.findAllByProcessAndGroupNotInForUpdate(process, groups)
+                .stream()
+                .map(ContestProcessGroup::getGroup)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public void deleteGroupsInProcessByProcessAndGroupIdIn(ContestProcess process, List<Long> groupIds) {
+        contestProcessGroupRepository.deleteAllByProcessAndGroupIdIn(process, groupIds);
     }
 }

@@ -56,12 +56,4 @@ public interface ContestGroupService {
      * @param account 操作人账号
      */
     void delete(Long groupId, String account);
-
-    /**
-     * 获取我的队伍
-     * @param contestId 竞赛id
-     * @param account 账号
-     * @return 队伍信息
-     */
-    ContestGroupDTO getMyGroupByContest(Long contestId, String account);
 }
