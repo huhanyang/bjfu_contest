@@ -38,9 +38,10 @@ public interface ContestRegisterService {
     /**
      * 删除报名
      * @param contestId 竞赛id
-     * @param account 参赛人账号
+     * @param deleteUserAccount 删除的用户的账号
+     * @param account 操作人账号
      */
-    void delete(Long contestId, String account);
+    void delete(Long contestId, String deleteUserAccount, String account);
 
     /**
      * 封禁用户

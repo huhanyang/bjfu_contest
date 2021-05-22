@@ -40,12 +40,13 @@ public class ContestRegisterController {
         return BaseResult.success();
     }
 
-    @RequireStudent
+    @RequireLogin
     @DeleteMapping("/delete")
-    public BaseResult<Void> delete(@NotNull(message = "竞赛id不能为空!") Long contestId) {
+    public BaseResult<Void> delete(@NotNull(message = "竞赛id不能为空!") Long contestId,
+                                   @NotNull(message = "删除用户账号的不能为空") String deleteUserAccount) {
         UserDTO userDTO = UserInfoContextUtil.getUserInfo()
                 .orElseThrow(() -> new AppException(ResultEnum.USER_CONTEXT_ERROR));
-        contestRegisterService.delete(contestId, userDTO.getAccount());
+        contestRegisterService.delete(contestId, deleteUserAccount, userDTO.getAccount());
         return BaseResult.success();
     }
 

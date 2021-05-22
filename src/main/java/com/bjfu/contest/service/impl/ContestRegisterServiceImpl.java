@@ -97,17 +97,21 @@ public class ContestRegisterServiceImpl implements ContestRegisterService {
 
     @Override
     @Transactional
-    public void delete(Long contestId, String account) {
+    public void delete(Long contestId, String deleteUserAccount, String account) {
         Contest contest = contestDAO.findById(contestId)
                 .orElseThrow(() -> new BizException(ResultEnum.CONTEST_NOT_EXIST));
         if(!contest.getStatus().equals(ContestStatusEnum.REGISTERING)) {
             throw new BizException(ResultEnum.CONTEST_NOT_REGISTERING);
         }
-        User user = userDAO.findActiveUserByAccount(account)
+        User deleteUser = userDAO.findActiveUserByAccount(deleteUserAccount)
                 .orElseThrow(() -> new BizException(ResultEnum.USER_DONT_EXIST));
-        ContestRegister contestRegister = contestRegisterDAO.findByContestAndUserForUpdate(contest, user)
-                .orElseThrow(() -> new BizException(ResultEnum.USER_NOT_REGISTERED));
-        contestRegisterDAO.delete(contestRegister);
+        if(account.equals(deleteUserAccount) || contest.getCreator().getAccount().equals(account)) {
+            ContestRegister contestRegister = contestRegisterDAO.findByContestAndUserForUpdate(contest, deleteUser)
+                    .orElseThrow(() -> new BizException(ResultEnum.USER_NOT_REGISTERED));
+            contestRegisterDAO.delete(contestRegister);
+        } else {
+            throw new BizException(ResultEnum.NOT_CONTEST_CREATOR);
+        }
     }
 
     @Override

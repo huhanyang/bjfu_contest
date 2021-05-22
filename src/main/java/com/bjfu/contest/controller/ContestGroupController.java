@@ -7,6 +7,7 @@ import com.bjfu.contest.pojo.dto.ContestGroupDTO;
 import com.bjfu.contest.pojo.dto.UserDTO;
 import com.bjfu.contest.pojo.request.group.GroupCreateRequest;
 import com.bjfu.contest.pojo.request.group.GroupEditRequest;
+import com.bjfu.contest.pojo.request.group.GroupJoinRequest;
 import com.bjfu.contest.pojo.request.group.GroupKickMemberRequest;
 import com.bjfu.contest.pojo.vo.ContestGroupVO;
 import com.bjfu.contest.security.annotation.RequireLogin;
@@ -97,10 +98,10 @@ public class ContestGroupController {
 
     @RequireStudent
     @PostMapping("/join")
-    public BaseResult<Void> join(@NotNull(message = "队伍id不为空") Long groupId) {
+    public BaseResult<Void> join(@Validated @RequestBody GroupJoinRequest request) {
         UserDTO userDTO = UserInfoContextUtil.getUserInfo()
                 .orElseThrow(() -> new AppException(ResultEnum.USER_CONTEXT_ERROR));
-        contestGroupService.join(groupId, userDTO.getAccount());
+        contestGroupService.join(request, userDTO.getAccount());
         return BaseResult.success();
     }
 

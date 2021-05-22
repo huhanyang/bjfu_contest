@@ -3,6 +3,7 @@ package com.bjfu.contest.service;
 import com.bjfu.contest.pojo.dto.ContestGroupDTO;
 import com.bjfu.contest.pojo.request.group.GroupCreateRequest;
 import com.bjfu.contest.pojo.request.group.GroupEditRequest;
+import com.bjfu.contest.pojo.request.group.GroupJoinRequest;
 import com.bjfu.contest.pojo.request.group.GroupKickMemberRequest;
 
 import java.util.List;
@@ -58,10 +59,10 @@ public interface ContestGroupService {
     void delete(Long groupId, String account);
     /**
      * 加入队伍
-     * @param groupId 队伍id
+     * @param request 请求
      * @param account 操作人账号
      */
-    void join(Long groupId, String account);
+    void join(GroupJoinRequest request, String account);
     /**
      * 踢出队伍
      * @param request 请求

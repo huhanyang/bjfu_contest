@@ -48,6 +48,7 @@ public enum ResultEnum {
     CONTEST_STATUS_CHANGE_NOT_ALLOWED(224, "竞赛状态变更不允许"),
     GROUP_TEACHER_EXIST(222, "竞赛队伍存在指导教师"),
     NOT_GROUP_TEACHER(222, "竞赛队伍存在指导教师"),
+    GROUP_CAPTAIN_CAN_NOT_KICK(222, "队伍队长不能被踢出"),
 
     USER_CONTEXT_ERROR(301, "用户信息登录上下文出错"),
     PROCESS_SORT_ERROR(302, "流程序号错误"),

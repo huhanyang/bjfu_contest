@@ -9,6 +9,7 @@ import com.bjfu.contest.pojo.dto.ContestGroupDTO;
 import com.bjfu.contest.pojo.entity.*;
 import com.bjfu.contest.pojo.request.group.GroupCreateRequest;
 import com.bjfu.contest.pojo.request.group.GroupEditRequest;
+import com.bjfu.contest.pojo.request.group.GroupJoinRequest;
 import com.bjfu.contest.pojo.request.group.GroupKickMemberRequest;
 import com.bjfu.contest.service.ContestGroupService;
 import org.springframework.beans.BeanUtils;
@@ -161,15 +162,25 @@ public class ContestGroupServiceImpl implements ContestGroupService {
         if(!group.getCaptain().getAccount().equals(account) && !contest.getCreator().getAccount().equals(account)) {
             throw new BizException(ResultEnum.NOT_GROUP_CAPTAIN);
         }
+        // 查询竞赛首个流程是否为运行状态
+        ContestProcess firstProcess = contest.getProcesses()
+                .stream()
+                .findFirst().orElse(null);
+        Boolean isOnlyExistRegisterProcess = Optional.ofNullable(firstProcess)
+                .map(process -> process.getStatus().equals(ContestProcessStatusEnum.RUNNING))
+                .orElseThrow(() -> new BizException(ResultEnum.REGISTER_PROCESS_NOT_EXIST));
+        if(!isOnlyExistRegisterProcess) {
+            throw new BizException(ResultEnum.REGISTER_PROCESS_NOT_RUNNING);
+        }
         // 删除队伍
         contestGroupDAO.delete(group);
     }
 
     @Override
     @Transactional
-    public void join(Long groupId, String account) {
+    public void join(GroupJoinRequest request, String account) {
         // 加锁获取队伍
-        ContestGroup group = contestGroupDAO.findByIdForUpdate(groupId)
+        ContestGroup group = contestGroupDAO.findByIdForUpdate(request.getGroupId())
                 .orElseThrow(() -> new BizException(ResultEnum.GROUP_NOT_EXIST));
         Contest contest = group.getContest();
         // 确认竞赛为注册状态
@@ -209,8 +220,10 @@ public class ContestGroupServiceImpl implements ContestGroupService {
         if(!contest.getStatus().equals(ContestStatusEnum.REGISTERING)) {
             throw new BizException(ResultEnum.CONTEST_NOT_REGISTERING);
         }
-        // 验证是队长或竞赛创建人
-        if(!group.getCaptain().getAccount().equals(account) && !contest.getCreator().getAccount().equals(account)) {
+        // 验证是队长或竞赛创建人或踢出自己
+        if(!group.getCaptain().getAccount().equals(account)
+                && !contest.getCreator().getAccount().equals(account)
+                && !account.equals(request.getUserAccount())) {
             throw new BizException(ResultEnum.NOT_GROUP_CAPTAIN);
         }
         // 查询竞赛首个流程是否为运行状态
@@ -222,6 +235,10 @@ public class ContestGroupServiceImpl implements ContestGroupService {
                 .orElseThrow(() -> new BizException(ResultEnum.REGISTER_PROCESS_NOT_EXIST));
         if(!isOnlyExistRegisterProcess) {
             throw new BizException(ResultEnum.REGISTER_PROCESS_NOT_RUNNING);
+        }
+        // 不能踢出队长
+        if(group.getCaptain().getAccount().equals(request.getUserAccount())) {
+            throw new BizException(ResultEnum.GROUP_CAPTAIN_CAN_NOT_KICK);
         }
         User user = userDAO.findByAccount(request.getUserAccount())
                 .orElseThrow(() -> new BizException(ResultEnum.USER_DONT_EXIST));
