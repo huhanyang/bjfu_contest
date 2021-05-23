@@ -16,3 +16,9 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
+minio:
+  url: localhost
+  port: 9000
+  accessKey: minioadmin
+  secretKey: minioadmin

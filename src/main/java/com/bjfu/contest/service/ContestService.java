@@ -1,11 +1,11 @@
 package com.bjfu.contest.service;
 
 import com.bjfu.contest.pojo.dto.ContestDTO;
-import com.bjfu.contest.pojo.request.contest.ContestCreateRequest;
-import com.bjfu.contest.pojo.request.contest.ContestEditRequest;
-import com.bjfu.contest.pojo.request.contest.ContestListAllRequest;
-import com.bjfu.contest.pojo.request.contest.ContestListCreatedRequest;
+import com.bjfu.contest.pojo.dto.ResourceDTO;
+import com.bjfu.contest.pojo.request.contest.*;
 import org.springframework.data.domain.Page;
+
+import java.io.IOException;
 
 /**
  * 竞赛相关操作服务
@@ -57,4 +57,13 @@ public interface ContestService {
      * @return 分页竞赛信息
      */
     Page<ContestDTO> listAll(ContestListAllRequest request, String account);
+
+    /**
+     * 上传资料文件到此竞赛中
+     * @param request 请求
+     * @param account 操作人账号
+     * @return 上传的资源
+     */
+    ResourceDTO addResource(ContestAddResourceRequest request, String account) throws IOException;
+
 }

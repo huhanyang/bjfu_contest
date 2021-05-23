@@ -9,6 +9,10 @@ import org.springframework.data.domain.Page;
 
 import java.util.List;
 
+/**
+ * 竞赛指导教师相关操作服务
+ * @author warthog
+ */
 public interface ContestTeacherService {
     /**
      * 添加指导老师

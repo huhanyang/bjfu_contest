@@ -49,11 +49,18 @@ public enum ResultEnum {
     GROUP_TEACHER_EXIST(222, "竞赛队伍存在指导教师"),
     NOT_GROUP_TEACHER(222, "竞赛队伍存在指导教师"),
     GROUP_CAPTAIN_CAN_NOT_KICK(222, "队伍队长不能被踢出"),
+    RESOURCE_NOT_EXIST(222, "资源不存在"),
+    NOT_RESOURCE_CREATOR(222, "非资源创建人"),
+    CANT_ACCESS_RESOURCE(222, "不能访问此资源"),
 
     USER_CONTEXT_ERROR(301, "用户信息登录上下文出错"),
     PROCESS_SORT_ERROR(302, "流程序号错误"),
-    PROCESS_BEFORE_STATUS_ERROR(302, "上一个流程的状态错误")
+    PROCESS_BEFORE_STATUS_ERROR(302, "上一个流程的状态错误"),
 
+    OSS_CLIENT_INIT_FAILED(401, "OSS客户端初始化失败"),
+    FILE_UPLOAD_FAILED(402, "文件上传失败"),
+    FILE_DOWNLOAD_FAILED(403, "文件下载失败"),
+    FILE_DELETE_FAILED(403, "文件删除失败"),
     ;
 
     private final Integer code;
