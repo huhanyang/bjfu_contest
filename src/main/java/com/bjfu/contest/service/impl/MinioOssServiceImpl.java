@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
+import java.util.Collections;
 
 /**
  * 基于开源的minio的oss实现类
@@ -109,7 +110,8 @@ public class MinioOssServiceImpl implements OssService {
                     .object(objectName)
                     .expiry(expires)
                     .build();
-            return minioClient.getPresignedObjectUrl(getPresignedObjectUrlArgs);
+            return minioClient.getPresignedObjectUrl(getPresignedObjectUrlArgs)
+                    .replace("http://localhost:9000", "http://localhost");
         } catch(Exception exception) {
             log.error("获取文件下载链接失败：", exception);
             throw new OssException(ResultEnum.FILE_DOWNLOAD_FAILED);

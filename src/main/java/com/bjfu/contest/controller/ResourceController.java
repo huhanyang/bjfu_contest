@@ -5,8 +5,10 @@ import com.bjfu.contest.enums.ResultEnum;
 import com.bjfu.contest.exception.AppException;
 import com.bjfu.contest.pojo.BaseResult;
 import com.bjfu.contest.pojo.dto.ResourceDTO;
+import com.bjfu.contest.pojo.dto.ResourceDownloadInfoDTO;
 import com.bjfu.contest.pojo.dto.UserDTO;
 import com.bjfu.contest.pojo.request.resource.ResourceEditRequest;
+import com.bjfu.contest.pojo.vo.ResourceDownloadInfoVO;
 import com.bjfu.contest.pojo.vo.ResourceVO;
 import com.bjfu.contest.security.annotation.RequireLogin;
 import com.bjfu.contest.service.ResourceService;
@@ -17,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Validated
@@ -47,21 +48,22 @@ public class ResourceController {
     }
 
     @RequireLogin
-    @GetMapping("/getDownloadUrl")
-    public BaseResult<String> getDownloadUrl(@NotNull(message = "资源id不能为空") Long resourceId) {
-        String url = resourceService.getDownloadUrl(resourceId);
-        return BaseResult.success(url);
+    @GetMapping("/getDownloadInfo")
+    public BaseResult<ResourceDownloadInfoVO> getDownloadUrl(@NotNull(message = "资源id不能为空") Long resourceId) {
+        UserDTO userDTO = UserInfoContextUtil.getUserInfo()
+                .orElseThrow(() -> new AppException(ResultEnum.USER_CONTEXT_ERROR));
+        ResourceDownloadInfoDTO downloadInfo = resourceService.getDownloadInfo(resourceId, userDTO.getAccount());
+        return BaseResult.success(new ResourceDownloadInfoVO(downloadInfo));
     }
 
     @RequireLogin
     @GetMapping("/listAllByTarget")
-    public BaseResult<Map<String, List<ResourceVO>>> listAllByTarget(@NotNull(message = "资源类型不能为空") ResourceTypeEnum type,
-                                                  @NotNull(message = "目标id不能为空") Long targetId) {
+    public BaseResult<List<ResourceVO>> listAllByTarget(@NotNull(message = "资源类型不能为空") ResourceTypeEnum type,
+                                                                     @NotNull(message = "目标id不能为空") Long targetId) {
         List<ResourceDTO> list = resourceService.listAllByTarget(type, targetId);
-        Map<String, List<ResourceVO>> map = list.stream()
-                .map(ResourceVO::new)
-                .collect(Collectors.groupingBy(ResourceVO::getClassification));
-        return BaseResult.success(map);
+        List<ResourceVO> resourceVOList = list.stream()
+                .map(ResourceVO::new).collect(Collectors.toList());
+        return BaseResult.success(resourceVOList);
     }
 
 }

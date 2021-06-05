@@ -15,6 +15,7 @@ import com.bjfu.contest.pojo.entity.User;
 import com.bjfu.contest.pojo.request.contest.*;
 import com.bjfu.contest.service.ContestService;
 import com.bjfu.contest.service.ResourceService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -26,6 +27,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Optional;
 
+@Slf4j
 @Service
 public class ContestServiceImpl implements ContestService {
 
@@ -131,7 +133,7 @@ public class ContestServiceImpl implements ContestService {
     }
 
     @Override
-    public ResourceDTO addResource(ContestAddResourceRequest request, String account) throws IOException {
+    public ResourceDTO addResource(ContestAddResourceRequest request, String account) {
         User user = userDAO.findActiveUserByAccount(account)
                 .orElseThrow(() -> new BizException(ResultEnum.USER_DONT_EXIST));
         Contest contest = contestDAO.findById(request.getContestId())
@@ -143,9 +145,14 @@ public class ContestServiceImpl implements ContestService {
         if(!contest.getCreator().getAccount().equals(account) && !isContestTeacher) {
             throw new BizException(ResultEnum.TEACHER_NOT_REGISTERED);
         }
-        return resourceService.create(user, request.getContestId(),
-                request.getFileName(), ResourceTypeEnum.CONTEST,
-                ResourceContentTypeEnum.OTHER, request.getClassification(),
-                request.getFile().getInputStream());
+        try {
+            return resourceService.create(user, request.getContestId(),
+                    request.getFileName(), ResourceTypeEnum.CONTEST,
+                    ResourceContentTypeEnum.OTHER, request.getClassification(),
+                    request.getFile().getInputStream());
+        } catch (IOException e) {
+            log.error("获取文件上传流失败", e);
+            throw new BizException(ResultEnum.GET_FILE_INPUT_STREAM_FAILED);
+        }
     }
 }

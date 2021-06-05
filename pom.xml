@@ -6,13 +6,13 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>2.4.4</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <relativePath/>
     </parent>
     <groupId>com.bjfu</groupId>
     <artifactId>contest</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.1</version>
     <name>contest</name>
-    <description>Demo project for Spring Boot</description>
+    <description>Contest Management System For Beijing Forestry University</description>
     <properties>
         <java.version>11</java.version>
     </properties>
@@ -62,6 +62,7 @@
     </dependencies>
 
     <build>
+        <finalName>bjfu_fortree</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

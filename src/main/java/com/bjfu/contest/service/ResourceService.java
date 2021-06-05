@@ -3,6 +3,7 @@ package com.bjfu.contest.service;
 import com.bjfu.contest.enums.ResourceContentTypeEnum;
 import com.bjfu.contest.enums.ResourceTypeEnum;
 import com.bjfu.contest.pojo.dto.ResourceDTO;
+import com.bjfu.contest.pojo.dto.ResourceDownloadInfoDTO;
 import com.bjfu.contest.pojo.entity.User;
 import com.bjfu.contest.pojo.request.resource.ResourceEditRequest;
 
@@ -46,9 +47,10 @@ public interface ResourceService {
     /**
      * 获取资源的下载链接
      * @param resourceId 资源id
-     * @return 下载的url
+     * @param account 操作人账号
+     * @return 下载信息
      */
-    String getDownloadUrl(Long resourceId);
+    ResourceDownloadInfoDTO getDownloadInfo(Long resourceId, String account);
 
     /**
      * 列出目标实体的所有资源

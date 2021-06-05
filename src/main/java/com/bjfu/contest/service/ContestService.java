@@ -64,6 +64,6 @@ public interface ContestService {
      * @param account 操作人账号
      * @return 上传的资源
      */
-    ResourceDTO addResource(ContestAddResourceRequest request, String account) throws IOException;
+    ResourceDTO addResource(ContestAddResourceRequest request, String account);
 
 }

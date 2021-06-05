@@ -61,6 +61,7 @@ public enum ResultEnum {
     FILE_UPLOAD_FAILED(402, "文件上传失败"),
     FILE_DOWNLOAD_FAILED(403, "文件下载失败"),
     FILE_DELETE_FAILED(403, "文件删除失败"),
+    GET_FILE_INPUT_STREAM_FAILED(404, "获取文件输入流失败"),
     ;
 
     private final Integer code;

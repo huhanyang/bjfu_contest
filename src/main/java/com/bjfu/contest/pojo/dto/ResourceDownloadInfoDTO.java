@@ -3,34 +3,25 @@ package com.bjfu.contest.pojo.dto;
 import com.bjfu.contest.enums.ResourceContentTypeEnum;
 import com.bjfu.contest.enums.ResourceTypeEnum;
 import com.bjfu.contest.pojo.entity.Resource;
-import com.bjfu.contest.pojo.entity.User;
 import lombok.Data;
 import org.springframework.beans.BeanUtils;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 
-import javax.persistence.*;
 import java.util.Date;
 
 @Data
-public class ResourceDTO {
+public class ResourceDownloadInfoDTO {
 
-    public ResourceDTO() {}
+    public ResourceDownloadInfoDTO() {
 
-    public ResourceDTO(Resource resource, boolean needCreator) {
+    }
+
+    public ResourceDownloadInfoDTO(Resource resource, String url) {
         if(resource != null) {
             BeanUtils.copyProperties(resource, this);
-            if(needCreator) {
-                this.creator = new UserDTO(resource.getCreator());
-            }
+            this.url = url;
         }
     }
 
-
-    /**
-     * 主键
-     */
-    private Long id;
     /**
      * 创建时间
      */
@@ -39,23 +30,10 @@ public class ResourceDTO {
      * 修改时间
      */
     private Date lastModifiedTime;
-
-    /**
-     * 资源类型
-     */
-    private ResourceTypeEnum type;
     /**
      * 内容类型
      */
     private ResourceContentTypeEnum contentType;
-    /**
-     * 创建人
-     */
-    private UserDTO creator;
-    /**
-     * 所属目标
-     */
-    private Long targetId;
     /**
      * 文件名
      */
@@ -65,7 +43,8 @@ public class ResourceDTO {
      */
     private String classification;
     /**
-     * 内容
+     * 下载用url
      */
-    private String content;
+    private String url;
+
 }

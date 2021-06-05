@@ -4,12 +4,11 @@ import com.bjfu.contest.enums.ResultEnum;
 import com.bjfu.contest.exception.AppException;
 import com.bjfu.contest.pojo.BaseResult;
 import com.bjfu.contest.pojo.dto.ContestDTO;
+import com.bjfu.contest.pojo.dto.ResourceDTO;
 import com.bjfu.contest.pojo.dto.UserDTO;
-import com.bjfu.contest.pojo.request.contest.ContestCreateRequest;
-import com.bjfu.contest.pojo.request.contest.ContestEditRequest;
-import com.bjfu.contest.pojo.request.contest.ContestListAllRequest;
-import com.bjfu.contest.pojo.request.contest.ContestListCreatedRequest;
+import com.bjfu.contest.pojo.request.contest.*;
 import com.bjfu.contest.pojo.vo.ContestVO;
+import com.bjfu.contest.pojo.vo.ResourceVO;
 import com.bjfu.contest.security.annotation.RequireLogin;
 import com.bjfu.contest.security.annotation.RequireTeacher;
 import com.bjfu.contest.service.ContestService;
@@ -78,6 +77,15 @@ public class ContestController {
                 .orElseThrow(() -> new AppException(ResultEnum.USER_CONTEXT_ERROR));
         Page<ContestDTO> contestDTOS = contestService.listAll(request, userDTO.getAccount());
         return BaseResult.success(contestDTOS.map(ContestVO::new));
+    }
+
+    @RequireLogin
+    @PostMapping("/addResource")
+    public BaseResult<ResourceVO> addResource(@Validated ContestAddResourceRequest request) {
+        UserDTO userDTO = UserInfoContextUtil.getUserInfo()
+                .orElseThrow(() -> new AppException(ResultEnum.USER_CONTEXT_ERROR));
+        ResourceDTO resourceDTO = contestService.addResource(request, userDTO.getAccount());
+        return BaseResult.success(new ResourceVO(resourceDTO));
     }
 
 }

@@ -1,5 +1,6 @@
 package com.bjfu.contest.security;
 
+import com.auth0.jwt.interfaces.Claim;
 import com.bjfu.contest.enums.ResultEnum;
 import com.bjfu.contest.enums.UserStatusEnum;
 import com.bjfu.contest.enums.UserTypeEnum;
@@ -51,11 +52,16 @@ public class UserInterceptor implements HandlerInterceptor {
             boolean requireTeacher = handlerMethod.getMethodAnnotation(RequireTeacher.class) != null;
             boolean requireAdmin = handlerMethod.getMethodAnnotation(RequireAdmin.class) != null;
             requireLogin = requireLogin || requireAdmin || requireStudent || requireTeacher;
-            // 尝试获取用户登录信息
-            UserDTO userInfo = Optional.ofNullable(request.getHeader("Authorization"))
-                    .map(token -> token.substring(7)) // 前缀"Bearer "清除
+            // 尝试从header中取token 取不到就从http参数中取
+            String token = Optional.ofNullable(request.getHeader("Authorization"))
+                    .filter(tokenInHeader -> tokenInHeader.length() > 7)
+                    .map(tokenInHeader -> tokenInHeader.substring(7)) // 前缀"Bearer "清除
+                    .orElse(request.getParameter("token"));
+            // 尝试验证解析token 并 获取用户登录信息
+            UserDTO userInfo = Optional.ofNullable(token)
                     .map(JwtUtil::verifyToken)
-                    .map(claimMap -> claimMap.get("userId").asString())
+                    .map(claimMap -> claimMap.get("userId"))
+                    .map(Claim::asString)
                     .map(Long::valueOf)
                     .map(userId -> userService.getUserInfo(userId))
                     .orElse(null);

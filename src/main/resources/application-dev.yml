@@ -1,21 +1,24 @@
 server:
   servlet:
     context-path: /contest
-
 spring:
   datasource:
-    url: jdbc:mysql://backend.mysql:3306/contest?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
-    name: contest
+    url: jdbc:mysql://localhost:3306/contest?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
     username: root
     password: my-secret-pw
+    name: contest
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     database: mysql
     hibernate:
       ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
 
 minio:
-  url: backend.minio
+  url: localhost
   port: 9000
   accessKey: minioadmin
   secretKey: minioadmin

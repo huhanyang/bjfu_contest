@@ -8,6 +8,7 @@ import com.bjfu.contest.enums.ResourceTypeEnum;
 import com.bjfu.contest.enums.ResultEnum;
 import com.bjfu.contest.exception.BizException;
 import com.bjfu.contest.pojo.dto.ResourceDTO;
+import com.bjfu.contest.pojo.dto.ResourceDownloadInfoDTO;
 import com.bjfu.contest.pojo.entity.Resource;
 import com.bjfu.contest.pojo.entity.User;
 import com.bjfu.contest.pojo.request.resource.ResourceEditRequest;
@@ -31,7 +32,7 @@ public class ResourceServiceImpl implements ResourceService {
     @Autowired
     private ResourceDAO resourceDAO;
 
-    private static Set<ResourceTypeEnum> ANY_USER_CAN_LIST_AND_DOWNLOAD_TYPES = new HashSet<>();
+    private static final Set<ResourceTypeEnum> ANY_USER_CAN_LIST_AND_DOWNLOAD_TYPES = new HashSet<>();
 
     static {
         ANY_USER_CAN_LIST_AND_DOWNLOAD_TYPES.add(ResourceTypeEnum.ALL);
@@ -69,6 +70,7 @@ public class ResourceServiceImpl implements ResourceService {
                 .orElseThrow(() -> new BizException(ResultEnum.RESOURCE_NOT_EXIST));
         // 资源创建人验证
         if(!resource.getCreator().getAccount().equals(account)) {
+            // todo 根据类型和targetId来判断是否有权限
             throw new BizException(ResultEnum.NOT_RESOURCE_CREATOR);
         }
         // 更新并保存Resource
@@ -85,6 +87,7 @@ public class ResourceServiceImpl implements ResourceService {
                 .orElseThrow(() -> new BizException(ResultEnum.RESOURCE_NOT_EXIST));
         // 资源创建人验证
         if(!resource.getCreator().getAccount().equals(account)) {
+            // todo 根据类型和targetId来判断是否有权限
             throw new BizException(ResultEnum.NOT_RESOURCE_CREATOR);
         }
         // 删除oss中的文件
@@ -94,7 +97,7 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     @Override
-    public String getDownloadUrl(Long resourceId) {
+    public ResourceDownloadInfoDTO getDownloadInfo(Long resourceId, String account) {
         // 查找Resource
         Resource resource = resourceDAO.findById(resourceId)
                 .orElseThrow(() -> new BizException(ResultEnum.RESOURCE_NOT_EXIST));
@@ -103,7 +106,8 @@ public class ResourceServiceImpl implements ResourceService {
             throw new BizException(ResultEnum.CANT_ACCESS_RESOURCE);
         }
         // 生成下载url
-        return ossService.preSignedGetObject(MinioConfig.FILE_BUCKET_NAME, resource.getContent());
+        String url = ossService.preSignedGetObject(MinioConfig.FILE_BUCKET_NAME, resource.getContent());
+        return new ResourceDownloadInfoDTO(resource, url);
     }
 
     @Override
