@@ -1,6 +1,7 @@
 package com.bjfu.contest.pojo.request.user;
 
 import com.bjfu.contest.enums.UserGenderEnum;
+import com.bjfu.contest.enums.UserStatusEnum;
 import com.bjfu.contest.enums.UserTypeEnum;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
@@ -34,6 +35,11 @@ public class UserEditUserInfoRequest {
      */
     @NotNull(message = "账号类型不能为空")
     private UserTypeEnum type;
+    /**
+     * 账号状态
+     */
+    @NotNull(message = "账号类型不能为空")
+    private UserStatusEnum status;
     /**
      * 真实姓名
      */

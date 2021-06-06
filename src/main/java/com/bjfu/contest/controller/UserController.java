@@ -9,6 +9,7 @@ import com.bjfu.contest.pojo.BaseResult;
 import com.bjfu.contest.pojo.dto.UserDTO;
 import com.bjfu.contest.pojo.request.user.*;
 import com.bjfu.contest.pojo.vo.UserVO;
+import com.bjfu.contest.security.annotation.RequireAdmin;
 import com.bjfu.contest.security.annotation.RequireLogin;
 import com.bjfu.contest.service.UserService;
 import com.bjfu.contest.utils.JwtUtil;
@@ -66,9 +67,12 @@ public class UserController {
         return BaseResult.success();
     }
 
-    @RequireLogin
+    @RequireAdmin
     @PostMapping("/editUserInfo")
     public BaseResult<Void> editUserInfo(@Validated @RequestBody UserEditUserInfoRequest request) {
+        if(request.getStatus().equals(UserStatusEnum.UNACTIVE) || request.getStatus().equals(UserStatusEnum.DELETE)){
+            throw new BizException(ResultEnum.WRONG_REQUEST_PARAMS);
+        }
         UserDTO self = UserInfoContextUtil.getUserInfo()
                 .orElseThrow(() -> new AppException(ResultEnum.USER_CONTEXT_ERROR));
         userService.editUserInfo(request, self.getId());

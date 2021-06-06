@@ -1,7 +1,9 @@
 package com.bjfu.contest.controller;
 
+import com.bjfu.contest.enums.ContestStatusEnum;
 import com.bjfu.contest.enums.ResultEnum;
 import com.bjfu.contest.exception.AppException;
+import com.bjfu.contest.exception.BizException;
 import com.bjfu.contest.pojo.BaseResult;
 import com.bjfu.contest.pojo.dto.ContestDTO;
 import com.bjfu.contest.pojo.dto.ResourceDTO;
@@ -40,6 +42,9 @@ public class ContestController {
     @RequireTeacher
     @PostMapping("/edit")
     public BaseResult<Void> edit(@Validated @RequestBody ContestEditRequest request) {
+        if(request.getStatus().equals(ContestStatusEnum.DELETE)) {
+            throw new BizException(ResultEnum.WRONG_REQUEST_PARAMS);
+        }
         UserDTO userDTO = UserInfoContextUtil.getUserInfo()
                 .orElseThrow(() -> new AppException(ResultEnum.USER_CONTEXT_ERROR));
         contestService.edit(request, userDTO.getAccount());

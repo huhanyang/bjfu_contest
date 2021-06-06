@@ -137,9 +137,6 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void editUserInfo(UserEditUserInfoRequest request, Long userId) {
-        userDAO.findById(userId)
-                .filter(user -> user.getType().equals(UserTypeEnum.ADMIN))
-                .or(()->{throw new BizException(ResultEnum.REQUIRE_ADMIN);});
         User user = userDAO.findByIdForUpdate(request.getUserId())
                 .orElseThrow(() -> new BizException(ResultEnum.USER_DONT_EXIST));
         User user1 = userDAO.findByAccountForUpdate(request.getAccount())

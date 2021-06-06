@@ -159,7 +159,7 @@ public class ContestRegisterServiceImpl implements ContestRegisterService {
         User user = userDAO.findActiveUserByAccount(account)
                 .orElseThrow(() -> new BizException(ResultEnum.USER_DONT_EXIST));
         ContestRegister register = contestRegisterDAO.findByContestAndUser(contest, user)
-                .orElseThrow(() -> new BizException(ResultEnum.USER_NOT_REGISTERED));
+                .orElse(null);
         return new ContestRegisterDTO(register, false, false, true);
     }
 }
