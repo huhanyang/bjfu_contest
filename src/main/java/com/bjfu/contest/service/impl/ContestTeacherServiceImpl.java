@@ -14,6 +14,7 @@ import com.bjfu.contest.pojo.dto.UserDTO;
 import com.bjfu.contest.pojo.entity.*;
 import com.bjfu.contest.pojo.request.teacher.TeacherCreateRequest;
 import com.bjfu.contest.pojo.request.teacher.TeacherDeleteRequest;
+import com.bjfu.contest.pojo.request.teacher.TeacherJoinGroupRequest;
 import com.bjfu.contest.pojo.request.teacher.TeacherListAllTeachContestsRequest;
 import com.bjfu.contest.service.ContestTeacherService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -93,9 +94,9 @@ public class ContestTeacherServiceImpl implements ContestTeacherService {
 
     @Override
     @Transactional
-    public void joinGroup(Long groupId, String account) {
+    public void joinGroup(TeacherJoinGroupRequest request, String account) {
         // 加锁获取队伍
-        ContestGroup group = contestGroupDAO.findByIdForUpdate(groupId)
+        ContestGroup group = contestGroupDAO.findByIdForUpdate(request.getGroupId())
                 .orElseThrow(() -> new BizException(ResultEnum.GROUP_NOT_EXIST));
         // 验证不存在指导教师
         if(group.getTeacher() != null) {

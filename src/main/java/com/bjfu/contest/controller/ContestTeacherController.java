@@ -7,6 +7,7 @@ import com.bjfu.contest.pojo.dto.ContestDTO;
 import com.bjfu.contest.pojo.dto.UserDTO;
 import com.bjfu.contest.pojo.request.teacher.TeacherCreateRequest;
 import com.bjfu.contest.pojo.request.teacher.TeacherDeleteRequest;
+import com.bjfu.contest.pojo.request.teacher.TeacherJoinGroupRequest;
 import com.bjfu.contest.pojo.request.teacher.TeacherListAllTeachContestsRequest;
 import com.bjfu.contest.pojo.vo.ContestVO;
 import com.bjfu.contest.pojo.vo.UserVO;
@@ -51,10 +52,10 @@ public class ContestTeacherController {
 
     @RequireTeacher
     @PostMapping("/joinGroup")
-    public BaseResult<Void> joinGroup(@NotNull(message = "队伍id不能为空") Long groupId) {
+    public BaseResult<Void> joinGroup(@Validated @RequestBody TeacherJoinGroupRequest request) {
         UserDTO userDTO = UserInfoContextUtil.getUserInfo()
                 .orElseThrow(() -> new BaseAppException(ResultEnum.USER_CONTEXT_ERROR));
-        contestTeacherService.joinGroup(groupId, userDTO.getAccount());
+        contestTeacherService.joinGroup(request, userDTO.getAccount());
         return BaseResult.success();
     }
 

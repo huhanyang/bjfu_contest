@@ -109,8 +109,7 @@ public class MinioOssServiceImpl implements OssService {
                     .object(objectName)
                     .expiry(expires)
                     .build();
-            return minioClient.getPresignedObjectUrl(getPresignedObjectUrlArgs)
-                    .replace("http://localhost:9000", "http://localhost");
+            return minioClient.getPresignedObjectUrl(getPresignedObjectUrlArgs);
         } catch(Exception exception) {
             log.error("获取文件下载链接失败：", exception);
             throw new OssException(ResultEnum.FILE_DOWNLOAD_FAILED);

@@ -4,6 +4,7 @@ import com.bjfu.contest.pojo.dto.ContestDTO;
 import com.bjfu.contest.pojo.dto.UserDTO;
 import com.bjfu.contest.pojo.request.teacher.TeacherCreateRequest;
 import com.bjfu.contest.pojo.request.teacher.TeacherDeleteRequest;
+import com.bjfu.contest.pojo.request.teacher.TeacherJoinGroupRequest;
 import com.bjfu.contest.pojo.request.teacher.TeacherListAllTeachContestsRequest;
 import org.springframework.data.domain.Page;
 
@@ -29,10 +30,10 @@ public interface ContestTeacherService {
     void delete(TeacherDeleteRequest request, String account);
     /**
      * 指导教师加入队伍
-     * @param groupId 队伍id
+     * @param request 请求
      * @param account 操作人账号
      */
-    void joinGroup(Long groupId, String account);
+    void joinGroup(TeacherJoinGroupRequest request, String account);
     /**
      * 指导教师退出队伍
      * @param groupId 队伍id
