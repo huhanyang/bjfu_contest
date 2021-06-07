@@ -8,7 +8,6 @@ import org.springframework.data.jpa.repository.Query;
 
 import javax.persistence.LockModeType;
 import java.util.List;
-import java.util.Optional;
 
 public interface ContestGroupMemberRepository extends JpaRepository<ContestGroupMember, Long> {
 

@@ -3,7 +3,6 @@ package com.bjfu.contest.pojo.vo;
 import com.bjfu.contest.enums.ResourceContentTypeEnum;
 import com.bjfu.contest.enums.ResourceTypeEnum;
 import com.bjfu.contest.pojo.dto.ResourceDTO;
-import com.bjfu.contest.pojo.dto.UserDTO;
 import lombok.Data;
 import org.springframework.beans.BeanUtils;
 

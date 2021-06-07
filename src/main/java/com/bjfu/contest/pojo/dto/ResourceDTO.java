@@ -3,13 +3,9 @@ package com.bjfu.contest.pojo.dto;
 import com.bjfu.contest.enums.ResourceContentTypeEnum;
 import com.bjfu.contest.enums.ResourceTypeEnum;
 import com.bjfu.contest.pojo.entity.Resource;
-import com.bjfu.contest.pojo.entity.User;
 import lombok.Data;
 import org.springframework.beans.BeanUtils;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 
-import javax.persistence.*;
 import java.util.Date;
 
 @Data

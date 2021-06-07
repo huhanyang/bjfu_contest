@@ -1,7 +1,6 @@
 package com.bjfu.contest.pojo.request.register;
 
 import com.bjfu.contest.enums.ContestRegisterStatusEnum;
-import com.bjfu.contest.enums.ContestStatusEnum;
 import com.bjfu.contest.pojo.request.BasePageAndSorterRequest;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

@@ -3,18 +3,24 @@ package com.bjfu.contest.service.impl;
 import com.bjfu.contest.dao.ContestDAO;
 import com.bjfu.contest.dao.ContestGroupDAO;
 import com.bjfu.contest.dao.ContestProcessDAO;
+import com.bjfu.contest.dao.UserDAO;
 import com.bjfu.contest.enums.ContestProcessStatusEnum;
 import com.bjfu.contest.enums.ContestStatusEnum;
 import com.bjfu.contest.enums.ResultEnum;
 import com.bjfu.contest.exception.BizException;
 import com.bjfu.contest.pojo.dto.ContestGroupDTO;
 import com.bjfu.contest.pojo.dto.ContestProcessDTO;
-import com.bjfu.contest.pojo.entity.*;
+import com.bjfu.contest.pojo.entity.BaseEntity;
+import com.bjfu.contest.pojo.entity.Contest;
+import com.bjfu.contest.pojo.entity.ContestGroup;
+import com.bjfu.contest.pojo.entity.ContestProcess;
 import com.bjfu.contest.pojo.request.process.ProcessCreateRequest;
 import com.bjfu.contest.pojo.request.process.ProcessDemoteGroupsRequest;
 import com.bjfu.contest.pojo.request.process.ProcessEditRequest;
 import com.bjfu.contest.pojo.request.process.ProcessPromoteGroupsRequest;
 import com.bjfu.contest.service.ContestProcessService;
+import com.bjfu.contest.service.ResourceService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,15 +32,20 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class ContestProcessServiceImpl implements ContestProcessService {
 
+    @Autowired
+    private UserDAO userDAO;
     @Autowired
     private ContestDAO contestDAO;
     @Autowired
     private ContestProcessDAO contestProcessDAO;
     @Autowired
     private ContestGroupDAO contestGroupDAO;
+    @Autowired
+    private ResourceService resourceService;
 
     @Override
     public ContestProcessDTO getInfo(Long processId) {

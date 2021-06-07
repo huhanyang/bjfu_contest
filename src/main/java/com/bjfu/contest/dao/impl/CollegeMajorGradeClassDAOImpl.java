@@ -1,14 +1,12 @@
 package com.bjfu.contest.dao.impl;
 
 import com.bjfu.contest.dao.CollegeMajorGradeClassDAO;
-import com.bjfu.contest.pojo.dto.CollegeMajorGradeClassDTO;
 import com.bjfu.contest.pojo.entity.CollegeMajorGradeClass;
 import com.bjfu.contest.repository.CollegeMajorGradeClassRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 

@@ -4,7 +4,10 @@ import com.bjfu.contest.enums.NotifyTypeEnum;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Enumerated;
+import javax.persistence.ManyToOne;
 
 /**
  * 通知实体

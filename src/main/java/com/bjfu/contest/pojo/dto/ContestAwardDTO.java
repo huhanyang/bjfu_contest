@@ -3,6 +3,7 @@ package com.bjfu.contest.pojo.dto;
 import com.bjfu.contest.pojo.entity.ContestAward;
 import lombok.Data;
 import org.springframework.beans.BeanUtils;
+
 import java.util.Date;
 
 @Data

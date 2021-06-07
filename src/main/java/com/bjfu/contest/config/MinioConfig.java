@@ -1,7 +1,6 @@
 package com.bjfu.contest.config;
 
 import com.bjfu.contest.enums.ResultEnum;
-import com.bjfu.contest.exception.AppException;
 import com.bjfu.contest.exception.OssException;
 import io.minio.BucketExistsArgs;
 import io.minio.MakeBucketArgs;

@@ -1,7 +1,6 @@
 package com.bjfu.contest.dao.impl;
 
 import com.bjfu.contest.dao.ContestTeacherDAO;
-import com.bjfu.contest.enums.ContestRegisterStatusEnum;
 import com.bjfu.contest.enums.ContestStatusEnum;
 import com.bjfu.contest.pojo.entity.Contest;
 import com.bjfu.contest.pojo.entity.ContestTeacher;
@@ -17,7 +16,10 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.criteria.Predicate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component

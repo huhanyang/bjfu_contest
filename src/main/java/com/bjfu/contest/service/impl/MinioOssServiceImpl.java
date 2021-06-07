@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
-import java.util.Collections;
 
 /**
  * 基于开源的minio的oss实现类
@@ -66,7 +65,7 @@ public class MinioOssServiceImpl implements OssService {
         try {
             RemoveObjectArgs removeObjectArgs = RemoveObjectArgs.builder()
                     .bucket(bucketName)
-                    .bucket(objectName)
+                    .object(objectName)
                     .build();
             minioClient.removeObject(removeObjectArgs);
         } catch (Exception exception) {

@@ -1,9 +1,7 @@
 package com.bjfu.contest.controller;
 
-import com.bjfu.contest.enums.ContestProcessStatusEnum;
 import com.bjfu.contest.enums.ResultEnum;
 import com.bjfu.contest.exception.AppException;
-import com.bjfu.contest.exception.BizException;
 import com.bjfu.contest.pojo.BaseResult;
 import com.bjfu.contest.pojo.dto.ContestProcessDTO;
 import com.bjfu.contest.pojo.dto.UserDTO;

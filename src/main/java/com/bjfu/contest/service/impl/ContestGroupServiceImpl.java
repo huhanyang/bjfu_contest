@@ -12,6 +12,8 @@ import com.bjfu.contest.pojo.request.group.GroupEditRequest;
 import com.bjfu.contest.pojo.request.group.GroupJoinRequest;
 import com.bjfu.contest.pojo.request.group.GroupKickMemberRequest;
 import com.bjfu.contest.service.ContestGroupService;
+import com.bjfu.contest.service.ResourceService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class ContestGroupServiceImpl implements ContestGroupService {
 
@@ -34,6 +37,10 @@ public class ContestGroupServiceImpl implements ContestGroupService {
     private ContestRegisterDAO contestRegisterDAO;
     @Autowired
     private ContestGroupDAO contestGroupDAO;
+    @Autowired
+    private ResourceService resourceService;
+    @Autowired
+    private ResourceDAO resourceDAO;
 
     @Override
     public ContestGroupDTO getInfo(Long groupId) {

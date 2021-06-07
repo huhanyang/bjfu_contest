@@ -5,6 +5,8 @@ import java.util.Map;
 
 public interface CollegeMajorGradeClassService {
 
+    // todo 删除时或许需要考虑下是否更新用户的信息
+
     List<String> findAllCollege();
     Map<String, Map<String, List<String>>> findAllClassByCollege(String college);
 

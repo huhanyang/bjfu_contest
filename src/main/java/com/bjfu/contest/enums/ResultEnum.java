@@ -52,6 +52,8 @@ public enum ResultEnum {
     RESOURCE_NOT_EXIST(222, "资源不存在"),
     NOT_RESOURCE_CREATOR(222, "非资源创建人"),
     CANT_ACCESS_RESOURCE(222, "不能访问此资源"),
+    NO_PERMISSION(222, "无权限"),
+    NOT_GROUP_MEMBER(222, "非队伍成员"),
 
     USER_CONTEXT_ERROR(301, "用户信息登录上下文出错"),
     PROCESS_SORT_ERROR(302, "流程序号错误"),

@@ -1,14 +1,9 @@
 package com.bjfu.contest.pojo.dto;
 
-import com.bjfu.contest.pojo.entity.Notify;
-import com.bjfu.contest.pojo.entity.User;
 import com.bjfu.contest.pojo.entity.UserInbox;
 import lombok.Data;
 import org.springframework.beans.BeanUtils;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 
-import javax.persistence.*;
 import java.util.Date;
 
 @Data

@@ -15,7 +15,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 public class ContestApplication {
 
     // 分页参数修改
-    // 学院 专业 年级 可配置化
+    // todo 注册时所选的学院/专业/年级/班级 可配置化
 
     public static void main(String[] args) {
         SpringApplication.run(ContestApplication.class, args);

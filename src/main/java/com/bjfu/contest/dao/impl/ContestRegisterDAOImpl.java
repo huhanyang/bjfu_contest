@@ -2,7 +2,6 @@ package com.bjfu.contest.dao.impl;
 
 import com.bjfu.contest.dao.ContestRegisterDAO;
 import com.bjfu.contest.enums.ContestRegisterStatusEnum;
-import com.bjfu.contest.enums.ContestStatusEnum;
 import com.bjfu.contest.pojo.entity.Contest;
 import com.bjfu.contest.pojo.entity.ContestRegister;
 import com.bjfu.contest.pojo.entity.User;

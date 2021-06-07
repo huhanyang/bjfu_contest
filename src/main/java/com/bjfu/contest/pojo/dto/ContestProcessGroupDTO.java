@@ -1,15 +1,10 @@
 package com.bjfu.contest.pojo.dto;
 
 import com.bjfu.contest.enums.ContestProcessGroupStatusEnum;
-import com.bjfu.contest.pojo.entity.ContestGroup;
-import com.bjfu.contest.pojo.entity.ContestProcess;
 import com.bjfu.contest.pojo.entity.ContestProcessGroup;
 import lombok.Data;
 import org.springframework.beans.BeanUtils;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 
-import javax.persistence.*;
 import java.util.Date;
 
 @Data

@@ -4,8 +4,6 @@ import com.bjfu.contest.enums.ContestProcessStatusEnum;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 
-import javax.persistence.Column;
-import javax.persistence.Enumerated;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.Date;

@@ -1,7 +1,6 @@
 package com.bjfu.contest.pojo.vo;
 
 import com.bjfu.contest.enums.ContestRegisterStatusEnum;
-import com.bjfu.contest.pojo.dto.ContestGroupDTO;
 import com.bjfu.contest.pojo.dto.ContestRegisterDTO;
 import lombok.Data;
 import org.springframework.beans.BeanUtils;

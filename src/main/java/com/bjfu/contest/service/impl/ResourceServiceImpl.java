@@ -3,7 +3,7 @@ package com.bjfu.contest.service.impl;
 import com.bjfu.contest.config.MinioConfig;
 import com.bjfu.contest.dao.ResourceDAO;
 import com.bjfu.contest.dao.UserDAO;
-import com.bjfu.contest.enums.ResourceContentTypeEnum;
+import com.bjfu.contest.enums.ResourceOperateTypeEnum;
 import com.bjfu.contest.enums.ResourceTypeEnum;
 import com.bjfu.contest.enums.ResultEnum;
 import com.bjfu.contest.exception.BizException;
@@ -12,51 +12,53 @@ import com.bjfu.contest.pojo.dto.ResourceDownloadInfoDTO;
 import com.bjfu.contest.pojo.entity.Resource;
 import com.bjfu.contest.pojo.entity.User;
 import com.bjfu.contest.pojo.request.resource.ResourceEditRequest;
+import com.bjfu.contest.pojo.request.resource.ResourceUploadRequest;
 import com.bjfu.contest.service.OssService;
 import com.bjfu.contest.service.ResourceService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.io.InputStream;
-import java.util.*;
+import java.io.IOException;
+import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class ResourceServiceImpl implements ResourceService {
 
     @Autowired
-    private UserDAO userDAO;
-    @Autowired
     private OssService ossService;
+    @Autowired
+    private UserDAO userDAO;
     @Autowired
     private ResourceDAO resourceDAO;
 
-    private static final Set<ResourceTypeEnum> ANY_USER_CAN_LIST_AND_DOWNLOAD_TYPES = new HashSet<>();
-
-    static {
-        ANY_USER_CAN_LIST_AND_DOWNLOAD_TYPES.add(ResourceTypeEnum.ALL);
-        ANY_USER_CAN_LIST_AND_DOWNLOAD_TYPES.add(ResourceTypeEnum.USER);
-        ANY_USER_CAN_LIST_AND_DOWNLOAD_TYPES.add(ResourceTypeEnum.TEACHER);
-        ANY_USER_CAN_LIST_AND_DOWNLOAD_TYPES.add(ResourceTypeEnum.STUDENT);
-        ANY_USER_CAN_LIST_AND_DOWNLOAD_TYPES.add(ResourceTypeEnum.CONTEST);
-        ANY_USER_CAN_LIST_AND_DOWNLOAD_TYPES.add(ResourceTypeEnum.PROCESS);
-    }
-
     @Override
     @Transactional
-    public ResourceDTO create(User creator, Long targetId, String fileName, ResourceTypeEnum type, ResourceContentTypeEnum contentType, String classification, InputStream stream) {
+    public ResourceDTO upload(ResourceUploadRequest request, String account) {
+        // 获取用户信息并鉴权
+        User creator = userDAO.findByAccount(account)
+                .orElseThrow(() -> new BizException(ResultEnum.USER_DONT_EXIST));
+        checkAuth(request.getType(), request.getTargetId(), ResourceOperateTypeEnum.UPLOAD, account);
         // 上传oss
         String objectName = UUID.randomUUID().toString();
-        ossService.putObject(MinioConfig.FILE_BUCKET_NAME, objectName, stream);
+        try {
+            ossService.putObject(MinioConfig.FILE_BUCKET_NAME, objectName, request.getFile().getInputStream());
+        } catch (IOException e) {
+            log.error("获取文件上传流失败", e);
+            throw new BizException(ResultEnum.GET_FILE_INPUT_STREAM_FAILED);
+        }
         // 保存资源信息
         Resource resource = new Resource();
         resource.setCreator(creator);
-        resource.setTargetId(targetId);
-        resource.setFileName(fileName);
-        resource.setType(type);
-        resource.setContentType(contentType);
-        resource.setClassification(classification);
+        resource.setTargetId(request.getTargetId());
+        resource.setFileName(request.getFileName());
+        resource.setType(request.getType());
+        resource.setContentType(request.getContentType());
+        resource.setClassification(request.getClassification());
         resource.setContent(objectName);
         resourceDAO.insert(resource);
         return new ResourceDTO(resource, true);
@@ -65,14 +67,10 @@ public class ResourceServiceImpl implements ResourceService {
     @Override
     @Transactional
     public void edit(ResourceEditRequest request, String account) {
-        // 查找Resource
+        // 查找Resource并鉴权
         Resource resource = resourceDAO.findById(request.getResourceId())
                 .orElseThrow(() -> new BizException(ResultEnum.RESOURCE_NOT_EXIST));
-        // 资源创建人验证
-        if(!resource.getCreator().getAccount().equals(account)) {
-            // todo 根据类型和targetId来判断是否有权限
-            throw new BizException(ResultEnum.NOT_RESOURCE_CREATOR);
-        }
+        checkAuth(resource.getType(), resource.getTargetId(), ResourceOperateTypeEnum.EDIT, account);
         // 更新并保存Resource
         resource.setClassification(request.getClassification());
         resource.setFileName(request.getFileName());
@@ -82,14 +80,10 @@ public class ResourceServiceImpl implements ResourceService {
     @Override
     @Transactional
     public void delete(Long resourceId, String account) {
-        // 查找Resource
+        // 查找Resource并鉴权
         Resource resource = resourceDAO.findById(resourceId)
                 .orElseThrow(() -> new BizException(ResultEnum.RESOURCE_NOT_EXIST));
-        // 资源创建人验证
-        if(!resource.getCreator().getAccount().equals(account)) {
-            // todo 根据类型和targetId来判断是否有权限
-            throw new BizException(ResultEnum.NOT_RESOURCE_CREATOR);
-        }
+        checkAuth(resource.getType(), resource.getTargetId(), ResourceOperateTypeEnum.DELETE, account);
         // 删除oss中的文件
         ossService.deleteObject(MinioConfig.FILE_BUCKET_NAME, resource.getContent());
         // 删除Resource记录
@@ -101,20 +95,15 @@ public class ResourceServiceImpl implements ResourceService {
         // 查找Resource
         Resource resource = resourceDAO.findById(resourceId)
                 .orElseThrow(() -> new BizException(ResultEnum.RESOURCE_NOT_EXIST));
-        // 验证是否可以直接访问
-        if(!ANY_USER_CAN_LIST_AND_DOWNLOAD_TYPES.contains(resource.getType())) {
-            throw new BizException(ResultEnum.CANT_ACCESS_RESOURCE);
-        }
+        checkAuth(resource.getType(), resource.getTargetId(), ResourceOperateTypeEnum.DOWNLOAD, account);
         // 生成下载url
         String url = ossService.preSignedGetObject(MinioConfig.FILE_BUCKET_NAME, resource.getContent());
         return new ResourceDownloadInfoDTO(resource, url);
     }
 
     @Override
-    public List<ResourceDTO> listAllByTarget(ResourceTypeEnum type, Long targetId) {
-        if(!ANY_USER_CAN_LIST_AND_DOWNLOAD_TYPES.contains(type)) {
-            throw new BizException(ResultEnum.CANT_ACCESS_RESOURCE);
-        }
+    public List<ResourceDTO> listAllByTarget(ResourceTypeEnum type, Long targetId, String account) {
+        checkAuth(type, targetId, ResourceOperateTypeEnum.LIST, account);
         // 获取实体下的所有资源
         List<Resource> resources = resourceDAO.findAllByTypeAndTargetId(type, targetId);
         // 按照分类进行分组
@@ -122,4 +111,9 @@ public class ResourceServiceImpl implements ResourceService {
                 .map(resource -> new ResourceDTO(resource, true))
                 .collect(Collectors.toList());
     }
+
+    void checkAuth(ResourceTypeEnum type, Long targetId, ResourceOperateTypeEnum operateType, String account) {
+        // todo 鉴权逻辑
+    }
+
 }

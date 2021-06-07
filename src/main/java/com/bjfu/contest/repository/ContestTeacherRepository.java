@@ -1,7 +1,6 @@
 package com.bjfu.contest.repository;
 
 import com.bjfu.contest.pojo.entity.Contest;
-import com.bjfu.contest.pojo.entity.ContestRegister;
 import com.bjfu.contest.pojo.entity.ContestTeacher;
 import com.bjfu.contest.pojo.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;

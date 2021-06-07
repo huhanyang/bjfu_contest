@@ -1,6 +1,5 @@
 package com.bjfu.contest.service;
 
-import com.bjfu.contest.enums.UserTypeEnum;
 import com.bjfu.contest.pojo.dto.UserDTO;
 import com.bjfu.contest.pojo.request.user.*;
 

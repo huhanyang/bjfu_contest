@@ -2,15 +2,9 @@ package com.bjfu.contest.pojo.dto;
 
 import com.bjfu.contest.enums.NotifyTypeEnum;
 import com.bjfu.contest.pojo.entity.Notify;
-import com.bjfu.contest.pojo.entity.Resource;
-import com.bjfu.contest.pojo.entity.User;
 import lombok.Data;
 import org.springframework.beans.BeanUtils;
 
-import javax.persistence.Column;
-import javax.persistence.Enumerated;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 import java.util.Date;
 
 @Data

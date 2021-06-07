@@ -4,15 +4,12 @@ import com.bjfu.contest.enums.ContestRegisterStatusEnum;
 import com.bjfu.contest.enums.UserGenderEnum;
 import com.bjfu.contest.enums.UserStatusEnum;
 import com.bjfu.contest.enums.UserTypeEnum;
-import com.bjfu.contest.pojo.entity.*;
+import com.bjfu.contest.pojo.entity.ContestRegister;
+import com.bjfu.contest.pojo.entity.User;
 import lombok.Data;
 import org.springframework.beans.BeanUtils;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 
-import javax.persistence.OneToMany;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
