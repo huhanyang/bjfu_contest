@@ -11,6 +11,7 @@ import javax.persistence.ManyToOne;
 
 /**
  * 通知实体
+ * @author warthog
  */
 @Getter
 @Setter

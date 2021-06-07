@@ -2,6 +2,10 @@ package com.bjfu.contest.enums;
 
 import lombok.Getter;
 
+/**
+ * 新闻类型枚举
+ * @author warthog
+ */
 @Getter
 public enum NewsTypeEnum {
 

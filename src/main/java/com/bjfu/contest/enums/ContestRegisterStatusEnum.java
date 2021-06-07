@@ -4,6 +4,7 @@ import lombok.Getter;
 
 /**
  * 报名表状态
+ * @author warthog
  */
 @Getter
 public enum ContestRegisterStatusEnum {

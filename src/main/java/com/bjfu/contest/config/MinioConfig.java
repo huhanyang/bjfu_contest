@@ -17,6 +17,7 @@ import java.security.NoSuchAlgorithmException;
 
 /**
  * 对象存储MinIO配置类
+ * @author warthog
  */
 @Slf4j
 @Configuration

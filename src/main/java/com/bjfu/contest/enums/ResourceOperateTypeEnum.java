@@ -2,6 +2,10 @@ package com.bjfu.contest.enums;
 
 import lombok.Getter;
 
+/**
+ * 资源操作类型枚举
+ * @author warthog
+ */
 @Getter
 public enum ResourceOperateTypeEnum {
 

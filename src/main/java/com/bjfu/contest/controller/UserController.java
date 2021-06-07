@@ -3,7 +3,7 @@ package com.bjfu.contest.controller;
 import com.auth0.jwt.interfaces.Claim;
 import com.bjfu.contest.enums.ResultEnum;
 import com.bjfu.contest.enums.UserStatusEnum;
-import com.bjfu.contest.exception.AppException;
+import com.bjfu.contest.exception.BaseAppException;
 import com.bjfu.contest.exception.BizException;
 import com.bjfu.contest.pojo.BaseResult;
 import com.bjfu.contest.pojo.dto.UserDTO;
@@ -61,7 +61,7 @@ public class UserController {
     @PostMapping("/sendActivateEmail")
     public BaseResult<Void> sendActivateEmail() {
         UserDTO userDTO = UserInfoContextUtil.getUserInfo()
-                .orElseThrow(() -> new AppException(ResultEnum.USER_CONTEXT_ERROR));
+                .orElseThrow(() -> new BaseAppException(ResultEnum.USER_CONTEXT_ERROR));
         userService.sendActivateEmail(userDTO.getAccount());
         return BaseResult.success();
     }
@@ -73,7 +73,7 @@ public class UserController {
             throw new BizException(ResultEnum.WRONG_REQUEST_PARAMS);
         }
         UserDTO self = UserInfoContextUtil.getUserInfo()
-                .orElseThrow(() -> new AppException(ResultEnum.USER_CONTEXT_ERROR));
+                .orElseThrow(() -> new BaseAppException(ResultEnum.USER_CONTEXT_ERROR));
         userService.editUserInfo(request, self.getId());
         return BaseResult.success();
     }
@@ -82,7 +82,7 @@ public class UserController {
     @PostMapping("/editSelfInfo")
     public BaseResult<UserVO> editSelfInfo(@Validated @RequestBody UserEditSelfInfoRequest request) {
         UserDTO userDTO = UserInfoContextUtil.getUserInfo()
-                .orElseThrow(() -> new AppException(ResultEnum.USER_CONTEXT_ERROR));
+                .orElseThrow(() -> new BaseAppException(ResultEnum.USER_CONTEXT_ERROR));
         userService.editSelfInfo(request, userDTO.getAccount());
         return BaseResult.success(new UserVO(userDTO));
     }
@@ -91,7 +91,7 @@ public class UserController {
     @PostMapping("/changePassword")
     public BaseResult<Void> changePassword(@Validated @RequestBody UserChangePasswordRequest request) {
         UserDTO userDTO = UserInfoContextUtil.getUserInfo()
-                .orElseThrow(() -> new AppException(ResultEnum.USER_CONTEXT_ERROR));
+                .orElseThrow(() -> new BaseAppException(ResultEnum.USER_CONTEXT_ERROR));
         userService.changePassword(request, userDTO.getAccount());
         return BaseResult.success();
     }
@@ -117,7 +117,7 @@ public class UserController {
     @GetMapping("/me")
     public BaseResult<UserVO> me() {
         UserDTO userDTO = UserInfoContextUtil.getUserInfo()
-                .orElseThrow(() -> new AppException(ResultEnum.USER_CONTEXT_ERROR));
+                .orElseThrow(() -> new BaseAppException(ResultEnum.USER_CONTEXT_ERROR));
         userDTO = userService.getMyInfo(userDTO.getId());
         if(userDTO.getStatus().equals(UserStatusEnum.BANNED)) {
             throw new BizException(ResultEnum.USER_IS_BANNED);

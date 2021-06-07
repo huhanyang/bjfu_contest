@@ -17,6 +17,7 @@ import java.util.Map;
 
 /**
  * jwt工具类
+ * @author warthog
  */
 @Slf4j
 public class JwtUtil {

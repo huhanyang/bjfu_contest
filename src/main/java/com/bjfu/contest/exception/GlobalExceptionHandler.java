@@ -21,8 +21,8 @@ public class GlobalExceptionHandler {
     }
 
     @ResponseBody
-    @ExceptionHandler(AppException.class)
-    public BaseResult<Void> forTreeException(AppException exception) {
+    @ExceptionHandler(BaseAppException.class)
+    public BaseResult<Void> forTreeException(BaseAppException exception) {
         return new BaseResult<>(exception.getResultEnum());
     }
 

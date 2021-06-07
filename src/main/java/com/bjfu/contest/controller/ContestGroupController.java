@@ -1,7 +1,7 @@
 package com.bjfu.contest.controller;
 
 import com.bjfu.contest.enums.ResultEnum;
-import com.bjfu.contest.exception.AppException;
+import com.bjfu.contest.exception.BaseAppException;
 import com.bjfu.contest.pojo.BaseResult;
 import com.bjfu.contest.pojo.dto.ContestGroupDTO;
 import com.bjfu.contest.pojo.dto.UserDTO;
@@ -61,7 +61,7 @@ public class ContestGroupController {
     @GetMapping("/listAllByMember")
     public BaseResult<List<ContestGroupVO>> listAllByMember() {
         UserDTO userDTO = UserInfoContextUtil.getUserInfo()
-                .orElseThrow(() -> new AppException(ResultEnum.USER_CONTEXT_ERROR));
+                .orElseThrow(() -> new BaseAppException(ResultEnum.USER_CONTEXT_ERROR));
         List<ContestGroupVO> groups = contestGroupService.listAllByMember(userDTO.getAccount())
                 .stream()
                 .map(ContestGroupVO::new)
@@ -73,7 +73,7 @@ public class ContestGroupController {
     @PostMapping("/create")
     public BaseResult<ContestGroupVO> create(@Validated @RequestBody GroupCreateRequest request) {
         UserDTO userDTO = UserInfoContextUtil.getUserInfo()
-                .orElseThrow(() -> new AppException(ResultEnum.USER_CONTEXT_ERROR));
+                .orElseThrow(() -> new BaseAppException(ResultEnum.USER_CONTEXT_ERROR));
         ContestGroupDTO groupDTO = contestGroupService.create(request, userDTO.getAccount());
         return BaseResult.success(new ContestGroupVO(groupDTO));
     }
@@ -82,7 +82,7 @@ public class ContestGroupController {
     @PostMapping("/edit")
     public BaseResult<Void> edit(@Validated @RequestBody GroupEditRequest request) {
         UserDTO userDTO = UserInfoContextUtil.getUserInfo()
-                .orElseThrow(() -> new AppException(ResultEnum.USER_CONTEXT_ERROR));
+                .orElseThrow(() -> new BaseAppException(ResultEnum.USER_CONTEXT_ERROR));
         contestGroupService.edit(request, userDTO.getAccount());
         return BaseResult.success();
     }
@@ -91,7 +91,7 @@ public class ContestGroupController {
     @DeleteMapping("/delete")
     public BaseResult<Void> delete(@NotNull(message = "队伍id不为空") Long groupId) {
         UserDTO userDTO = UserInfoContextUtil.getUserInfo()
-                .orElseThrow(() -> new AppException(ResultEnum.USER_CONTEXT_ERROR));
+                .orElseThrow(() -> new BaseAppException(ResultEnum.USER_CONTEXT_ERROR));
         contestGroupService.delete(groupId, userDTO.getAccount());
         return BaseResult.success();
     }
@@ -100,7 +100,7 @@ public class ContestGroupController {
     @PostMapping("/join")
     public BaseResult<Void> join(@Validated @RequestBody GroupJoinRequest request) {
         UserDTO userDTO = UserInfoContextUtil.getUserInfo()
-                .orElseThrow(() -> new AppException(ResultEnum.USER_CONTEXT_ERROR));
+                .orElseThrow(() -> new BaseAppException(ResultEnum.USER_CONTEXT_ERROR));
         contestGroupService.join(request, userDTO.getAccount());
         return BaseResult.success();
     }
@@ -109,7 +109,7 @@ public class ContestGroupController {
     @PostMapping("/kickMember")
     public BaseResult<Void> kickMember(@Validated @RequestBody GroupKickMemberRequest request) {
         UserDTO userDTO = UserInfoContextUtil.getUserInfo()
-                .orElseThrow(() -> new AppException(ResultEnum.USER_CONTEXT_ERROR));
+                .orElseThrow(() -> new BaseAppException(ResultEnum.USER_CONTEXT_ERROR));
         contestGroupService.kickMember(request, userDTO.getAccount());
         return BaseResult.success();
     }

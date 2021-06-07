@@ -1,7 +1,7 @@
 package com.bjfu.contest.controller;
 
 import com.bjfu.contest.enums.ResultEnum;
-import com.bjfu.contest.exception.AppException;
+import com.bjfu.contest.exception.BaseAppException;
 import com.bjfu.contest.pojo.BaseResult;
 import com.bjfu.contest.pojo.dto.ContestRegisterDTO;
 import com.bjfu.contest.pojo.dto.UserDTO;
@@ -35,7 +35,7 @@ public class ContestRegisterController {
     @PostMapping("/create")
     public BaseResult<Void> create(@Validated @RequestBody RegisterCreateRequest request) {
         UserDTO userDTO = UserInfoContextUtil.getUserInfo()
-                .orElseThrow(() -> new AppException(ResultEnum.USER_CONTEXT_ERROR));
+                .orElseThrow(() -> new BaseAppException(ResultEnum.USER_CONTEXT_ERROR));
         contestRegisterService.create(request, userDTO.getAccount());
         return BaseResult.success();
     }
@@ -45,7 +45,7 @@ public class ContestRegisterController {
     public BaseResult<Void> delete(@NotNull(message = "竞赛id不能为空!") Long contestId,
                                    @NotNull(message = "删除用户账号的不能为空") String deleteUserAccount) {
         UserDTO userDTO = UserInfoContextUtil.getUserInfo()
-                .orElseThrow(() -> new AppException(ResultEnum.USER_CONTEXT_ERROR));
+                .orElseThrow(() -> new BaseAppException(ResultEnum.USER_CONTEXT_ERROR));
         contestRegisterService.delete(contestId, deleteUserAccount, userDTO.getAccount());
         return BaseResult.success();
     }
@@ -54,7 +54,7 @@ public class ContestRegisterController {
     @PostMapping("/ban")
     public BaseResult<Void> ban(@Validated @RequestBody RegisterBanRequest request) {
         UserDTO userDTO = UserInfoContextUtil.getUserInfo()
-                .orElseThrow(() -> new AppException(ResultEnum.USER_CONTEXT_ERROR));
+                .orElseThrow(() -> new BaseAppException(ResultEnum.USER_CONTEXT_ERROR));
         contestRegisterService.ban(request, userDTO.getAccount());
         return BaseResult.success();
     }
@@ -63,7 +63,7 @@ public class ContestRegisterController {
     @PostMapping("/unban")
     public BaseResult<Void> unban(@Validated @RequestBody RegisterBanRequest request) {
         UserDTO userDTO = UserInfoContextUtil.getUserInfo()
-                .orElseThrow(() -> new AppException(ResultEnum.USER_CONTEXT_ERROR));
+                .orElseThrow(() -> new BaseAppException(ResultEnum.USER_CONTEXT_ERROR));
         contestRegisterService.unban(request, userDTO.getAccount());
         return BaseResult.success();
     }
@@ -79,7 +79,7 @@ public class ContestRegisterController {
     @GetMapping("/listAllRegistered")
     public BaseResult<List<ContestRegisterVO>> listAllRegistered() {
         UserDTO userDTO = UserInfoContextUtil.getUserInfo()
-                .orElseThrow(() -> new AppException(ResultEnum.USER_CONTEXT_ERROR));
+                .orElseThrow(() -> new BaseAppException(ResultEnum.USER_CONTEXT_ERROR));
         List<ContestRegisterDTO> registerDTOS = contestRegisterService.listAllRegistered(userDTO.getAccount());
         return BaseResult.success(registerDTOS.stream().map(ContestRegisterVO::new).collect(Collectors.toList()));
     }
@@ -88,7 +88,7 @@ public class ContestRegisterController {
     @GetMapping("/getInfo")
     public BaseResult<ContestRegisterVO> getInfo(@NotNull(message = "竞赛id不能为空") Long contestId) {
         UserDTO userDTO = UserInfoContextUtil.getUserInfo()
-                .orElseThrow(() -> new AppException(ResultEnum.USER_CONTEXT_ERROR));
+                .orElseThrow(() -> new BaseAppException(ResultEnum.USER_CONTEXT_ERROR));
         ContestRegisterDTO registerDTO = contestRegisterService.getInfo(contestId, userDTO.getAccount());
         return BaseResult.success(new ContestRegisterVO(registerDTO));
     }

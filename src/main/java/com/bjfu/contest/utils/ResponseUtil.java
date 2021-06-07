@@ -8,6 +8,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+/**
+ * 响应体工具类
+ * @author warthog
+ */
 public class ResponseUtil {
     public static void writeResultToResponse(ResultEnum resultEnum, HttpServletResponse response) throws IOException {
         response.reset();

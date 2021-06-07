@@ -2,6 +2,9 @@ package com.bjfu.contest.enums;
 
 import lombok.Getter;
 
+/**
+ * 资源内容类型枚举
+ */
 @Getter
 public enum ResourceContentTypeEnum {
 

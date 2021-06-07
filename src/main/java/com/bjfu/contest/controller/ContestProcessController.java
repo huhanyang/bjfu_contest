@@ -1,7 +1,7 @@
 package com.bjfu.contest.controller;
 
 import com.bjfu.contest.enums.ResultEnum;
-import com.bjfu.contest.exception.AppException;
+import com.bjfu.contest.exception.BaseAppException;
 import com.bjfu.contest.pojo.BaseResult;
 import com.bjfu.contest.pojo.dto.ContestProcessDTO;
 import com.bjfu.contest.pojo.dto.UserDTO;
@@ -52,7 +52,7 @@ public class ContestProcessController {
     @PostMapping("/create")
     public BaseResult<ContestProcessVO> create(@Validated @RequestBody ProcessCreateRequest request) {
         UserDTO userDTO = UserInfoContextUtil.getUserInfo()
-                .orElseThrow(() -> new AppException(ResultEnum.USER_CONTEXT_ERROR));
+                .orElseThrow(() -> new BaseAppException(ResultEnum.USER_CONTEXT_ERROR));
         ContestProcessDTO processDTO = contestProcessService.create(request, userDTO.getAccount());
         return BaseResult.success(new ContestProcessVO(processDTO));
     }
@@ -61,7 +61,7 @@ public class ContestProcessController {
     @PostMapping("/edit")
     public BaseResult<Void> edit(@Validated @RequestBody ProcessEditRequest request) {
         UserDTO userDTO = UserInfoContextUtil.getUserInfo()
-                .orElseThrow(() -> new AppException(ResultEnum.USER_CONTEXT_ERROR));
+                .orElseThrow(() -> new BaseAppException(ResultEnum.USER_CONTEXT_ERROR));
         contestProcessService.edit(request, userDTO.getAccount());
         return BaseResult.success();
     }
@@ -71,7 +71,7 @@ public class ContestProcessController {
     public BaseResult<Void> delete(@NotNull(message = "竞赛id不能为空!") Long contestId,
                                    @NotNull(message = "流程id不能为空!") Long processId) {
         UserDTO userDTO = UserInfoContextUtil.getUserInfo()
-                .orElseThrow(() -> new AppException(ResultEnum.USER_CONTEXT_ERROR));
+                .orElseThrow(() -> new BaseAppException(ResultEnum.USER_CONTEXT_ERROR));
         contestProcessService.delete(contestId, processId, userDTO.getAccount());
         return BaseResult.success();
     }
@@ -80,7 +80,7 @@ public class ContestProcessController {
     @GetMapping("/listPromotableGroups")
     public BaseResult<List<ContestGroupVO>> listPromotableGroups(@NotNull(message = "目标流程id不能为空!") Long targetProcessId) {
         UserDTO userDTO = UserInfoContextUtil.getUserInfo()
-                .orElseThrow(() -> new AppException(ResultEnum.USER_CONTEXT_ERROR));
+                .orElseThrow(() -> new BaseAppException(ResultEnum.USER_CONTEXT_ERROR));
         List<ContestGroupVO> groups = contestProcessService.listPromotableGroups(targetProcessId, userDTO.getAccount())
                 .stream()
                 .map(ContestGroupVO::new)
@@ -92,7 +92,7 @@ public class ContestProcessController {
     @PostMapping("/promoteGroups")
     public BaseResult<Void> promoteGroups(@Validated @RequestBody ProcessPromoteGroupsRequest request) {
         UserDTO userDTO = UserInfoContextUtil.getUserInfo()
-                .orElseThrow(() -> new AppException(ResultEnum.USER_CONTEXT_ERROR));
+                .orElseThrow(() -> new BaseAppException(ResultEnum.USER_CONTEXT_ERROR));
         contestProcessService.promoteGroups(request, userDTO.getAccount());
         return BaseResult.success();
     }
@@ -101,7 +101,7 @@ public class ContestProcessController {
     @PostMapping("/demoteGroups")
     public BaseResult<Void> demoteGroups(@Validated @RequestBody ProcessDemoteGroupsRequest request) {
         UserDTO userDTO = UserInfoContextUtil.getUserInfo()
-                .orElseThrow(() -> new AppException(ResultEnum.USER_CONTEXT_ERROR));
+                .orElseThrow(() -> new BaseAppException(ResultEnum.USER_CONTEXT_ERROR));
         contestProcessService.demoteGroups(request, userDTO.getAccount());
         return BaseResult.success();
     }

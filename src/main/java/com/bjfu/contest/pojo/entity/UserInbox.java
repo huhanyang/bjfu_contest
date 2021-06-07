@@ -9,6 +9,7 @@ import javax.persistence.ManyToOne;
 
 /**
  * 用户收件箱实体
+ * @author warthog
  */
 @Getter
 @Setter

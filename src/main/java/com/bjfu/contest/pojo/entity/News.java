@@ -8,6 +8,7 @@ import javax.persistence.*;
 
 /**
  * 新闻实体
+ * @author warthog
  */
 @Getter
 @Setter

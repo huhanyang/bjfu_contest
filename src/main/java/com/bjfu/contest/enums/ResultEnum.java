@@ -2,6 +2,10 @@ package com.bjfu.contest.enums;
 
 import lombok.Getter;
 
+/**
+ * http响应体枚举
+ * @author warthog
+ */
 @Getter
 public enum ResultEnum {
 

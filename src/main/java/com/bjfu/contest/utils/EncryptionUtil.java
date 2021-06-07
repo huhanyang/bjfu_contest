@@ -8,6 +8,7 @@ import java.util.Base64;
 
 /**
  * 加密工具类
+ * @author warthog
  */
 public class EncryptionUtil {
 

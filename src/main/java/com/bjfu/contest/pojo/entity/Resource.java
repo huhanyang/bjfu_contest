@@ -12,6 +12,7 @@ import javax.persistence.ManyToOne;
 
 /**
  * 资源文件
+ * @author warthog
  */
 @Getter
 @Setter
